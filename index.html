@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Porsche Car Configurator | Конфигуратор автомобилей Porsche</title>
+    <!-- Google Fonts: Inter and Montserrat for luxury automotive typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Top Global Header -->
+    <header class="app-header">
+        <div class="header-left">
+            <div class="porsche-brand">
+                <span class="brand-crest">
+                    <svg width="22" height="26" viewBox="0 0 40 48" fill="none">
+                        <path d="M20 0L40 6V24C40 37 20 48 20 48C20 48 0 37 0 24V6L20 0Z" fill="#c69f37"/>
+                        <path d="M20 4L36 9V23C36 34 20 43 20 43C20 43 4 34 4 23V9L20 4Z" fill="#111112"/>
+                        <path d="M12 14H28V18H12V14ZM14 22H26V26H14V22ZM16 30H24V34H16V30Z" fill="#c69f37"/>
+                    </svg>
+                </span>
+                <span class="brand-wordmark">PORSCHE</span>
+            </div>
+            <div class="header-vehicle-badge">
+                <span class="header-vehicle-name" id="header-vehicle-title">Porsche 911 Carrera GTS</span>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <!-- Currency Switcher -->
+            <div class="currency-wrapper">
+                <label for="currency-select" class="currency-label">Валюта:</label>
+                <select id="currency-select" class="currency-select">
+                    <option value="RUB">RUB (₽)</option>
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                </select>
+            </div>
+
+            <!-- Share & Save Actions -->
+            <button class="header-icon-btn" id="btn-share-code" title="Сохранить и поделиться кодом сборки">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                <span>Поделиться</span>
+            </button>
+
+            <button class="header-icon-btn" id="btn-export-json" title="Экспортировать JSON">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Экспорт</span>
+            </button>
+
+            <button class="header-icon-btn" id="btn-import-json" title="Загрузить сохраненную конфигурацию">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span>Импорт</span>
+            </button>
+
+            <!-- Sticky Header Price Tag -->
+            <div class="header-live-price">
+                <span class="hlp-label">Total MSRP:</span>
+                <span class="hlp-amount price-info-trigger" id="header-vehicle-price">0 ₽</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Configurator Split Screen App -->
+    <main class="configurator-app">
+        <!-- Left Side: Interactive Vehicle Visualizer -->
+        <section class="visualizer-pane">
+            <div id="visualizer-container" class="visualizer-container">
+                <!-- Injected by visualizer.js -->
+            </div>
+        </section>
+
+        <!-- Right Side: Step-by-Step Configuration Panel -->
+        <section class="config-pane">
+            <!-- Step Navigation Tabs -->
+            <nav class="step-nav-bar" id="step-nav">
+                <!-- Injected by app.js -->
+            </nav>
+
+            <!-- Scrollable Content Pane for active step -->
+            <div class="config-panel-scroll" id="config-panel-content">
+                <!-- Dynamically populated by app.js -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Sticky Bottom Calculation & Navigation Bar -->
+    <footer class="app-footer">
+        <div class="footer-left">
+            <div class="footer-summary-group">
+                <span class="fs-car-name" id="footer-vehicle-name">Porsche 911 Carrera GTS</span>
+                <div class="fs-price-breakdown">
+                    <span class="fs-price-item">База: <strong id="footer-base-price">0 ₽</strong></span>
+                    <span class="fs-dot">•</span>
+                    <span class="fs-price-item">Опции: <strong id="footer-equipment-price">0 ₽</strong></span>
+                    <button class="fs-details-link price-info-trigger">
+                        Детализация цены ⓘ
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-center">
+            <div class="footer-total-box">
+                <span class="total-label">Итоговая стоимость (MSRP):</span>
+                <span class="total-number" id="footer-total-price">0 ₽</span>
+            </div>
+        </div>
+
+        <div class="footer-right">
+            <button class="footer-nav-btn prev-btn" id="btn-prev-step">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+                Назад
+            </button>
+            <button class="footer-nav-btn next-btn" id="btn-next-step">
+                Далее
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+        </div>
+    </footer>
+
+    <!-- MODAL: Porsche Feasibility & Compatibility Resolution Dialog -->
+    <div class="modal-overlay" id="conflict-modal">
+        <div class="modal-card conflict-dialog">
+            <div class="modal-header">
+                <div class="modal-title-wrap">
+                    <span class="modal-icon-warning">⚠️</span>
+                    <h3 class="modal-title" id="conflict-modal-title">Несовместимость оборудования</h3>
+                </div>
+                <button class="modal-close-btn" id="conflict-modal-close">✕</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="conflict-desc-box">
+                    <p id="conflict-modal-reason" class="conflict-reason-text">
+                        Причина несовместимости опций.
+                    </p>
+                </div>
+
+                <div id="conflict-modal-diff" class="conflict-diff-content">
+                    <!-- Diff details inserted dynamically -->
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="modal-action-btn btn-cancel" id="conflict-modal-cancel">
+                    Отменить выбор
+                </button>
+                <button class="modal-action-btn btn-accept" id="conflict-modal-accept">
+                    Принять изменения
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Detailed Price Breakdown -->
+    <div class="modal-overlay" id="price-breakdown-modal">
+        <div class="modal-card price-breakdown-dialog">
+            <div class="modal-header">
+                <h3 class="modal-title">Детализация расчета стоимости (Total MSRP)</h3>
+                <button class="modal-close-btn" id="price-modal-close">✕</button>
+            </div>
+            <div class="modal-body" id="price-breakdown-content">
+                <!-- Breakdown rows inserted dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Main JavaScript Modules -->
+    <script type="module" src="js/data.js"></script>
+    <script type="module" src="js/engine.js"></script>
+    <script type="module" src="js/visualizer.js"></script>
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
