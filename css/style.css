@@ -242,50 +242,62 @@ button {
 /* Step Navigation Bar */
 .step-nav-bar {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     background: #09090b;
     border-bottom: 1px solid var(--border-color);
-    padding: 0 16px;
-    overflow-x: auto;
-    white-space: nowrap;
-    scrollbar-width: none;
-}
-
-.step-nav-bar::-webkit-scrollbar {
-    display: none;
+    padding: 0;
+    width: 100%;
+    height: 48px;
+    position: relative;
+    z-index: 10;
 }
 
 .step-tab {
+    flex: 1;
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 15px 14px;
-    color: var(--text-muted);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    border-bottom: 2px solid transparent;
-    transition: all var(--transition-fast);
+    justify-content: center;
+    padding: 0 4px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    transition: background var(--transition-fast);
 }
 
 .step-tab:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.step-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    transition: color var(--transition-fast);
+    position: relative;
+    padding: 16px 2px;
+    white-space: nowrap;
+}
+
+.step-tab:hover .step-label {
     color: var(--text-secondary);
 }
 
-.step-tab.active {
-    color: var(--text-primary);
-    border-bottom-color: #ffffff;
+.step-tab.active .step-label {
+    color: #ffffff;
+    font-weight: 700;
 }
 
-.step-num {
-    font-size: 10px;
-    color: var(--text-muted);
-    font-weight: 500;
-}
-
-.step-tab.active .step-num {
-    color: var(--text-primary);
+.step-tab.active .step-label::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #ffffff;
 }
 
 /* Scrollable Option Content */
@@ -2054,6 +2066,22 @@ button {
 }
 
 @media (max-width: 768px) {
+    .step-nav-bar {
+        overflow-x: auto;
+        justify-content: flex-start;
+        scrollbar-width: none;
+        padding: 0 12px;
+    }
+
+    .step-nav-bar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .step-tab {
+        flex: 0 0 auto;
+        padding: 0 14px;
+    }
+
     .app-header {
         padding: 0 16px;
     }

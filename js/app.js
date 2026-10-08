@@ -16,12 +16,12 @@ export class App {
         this.pendingConflict = null;
 
         this.steps = [
-            { id: 'models', label: '1. Модель', icon: 'car' },
-            { id: 'trims', label: '2. Комплектация', icon: 'gauge' },
-            { id: 'exterior', label: '3. Экстерьер', icon: 'palette' },
-            { id: 'interior', label: '4. Интерьер', icon: 'disc' },
-            { id: 'options', label: '5. Опции & Пакеты', icon: 'sliders' },
-            { id: 'summary', label: '6. Итог (Summary)', icon: 'check-circle' }
+            { id: 'models', label: 'Модель' },
+            { id: 'trims', label: 'Комплектация' },
+            { id: 'exterior', label: 'Экстерьер' },
+            { id: 'interior', label: 'Интерьер' },
+            { id: 'options', label: 'Опции' },
+            { id: 'summary', label: 'Итог' }
         ];
 
         this.init();
@@ -54,9 +54,8 @@ export class App {
         if (!navEl) return;
 
         navEl.innerHTML = this.steps.map((step, idx) => `
-            <button class="step-tab ${idx === this.currentStep ? 'active' : ''}" data-step="${idx}">
-                <span class="step-num">${idx + 1}</span>
-                <span class="step-label">${step.label.split('. ')[1]}</span>
+            <button class="step-tab ${idx === this.currentStep ? 'active' : ''}" data-step="${idx}" type="button">
+                <span class="step-label">${step.label}</span>
             </button>
         `).join('');
 
