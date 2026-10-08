@@ -16,10 +16,10 @@
         <div class="header-left">
             <div class="porsche-brand">
                 <span class="brand-crest">
-                    <svg width="22" height="26" viewBox="0 0 40 48" fill="none">
-                        <path d="M20 0L40 6V24C40 37 20 48 20 48C20 48 0 37 0 24V6L20 0Z" fill="#c69f37"/>
-                        <path d="M20 4L36 9V23C36 34 20 43 20 43C20 43 4 34 4 23V9L20 4Z" fill="#111112"/>
-                        <path d="M12 14H28V18H12V14ZM14 22H26V26H14V22ZM16 30H24V34H16V30Z" fill="#c69f37"/>
+                    <svg width="20" height="24" viewBox="0 0 40 48" fill="none">
+                        <path d="M20 0L40 6V24C40 37 20 48 20 48C20 48 0 37 0 24V6L20 0Z" fill="#ffffff" fill-opacity="0.9"/>
+                        <path d="M20 4L36 9V23C36 34 20 43 20 43C20 43 4 34 4 23V9L20 4Z" fill="#09090b"/>
+                        <path d="M12 14H28V18H12V14ZM14 22H26V26H14V22ZM16 30H24V34H16V30Z" fill="#ffffff" fill-opacity="0.9"/>
                     </svg>
                 </span>
                 <span class="brand-wordmark">PORSCHE</span>
@@ -41,18 +41,18 @@
             </div>
 
             <!-- Share & Save Actions -->
-            <button class="header-icon-btn" id="btn-share-code" title="Сохранить и поделиться кодом сборки">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                <span>Поделиться</span>
+            <button class="header-icon-btn" id="btn-share-code" title="Сохранить и получить код сборки">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                <span>Код сборки</span>
             </button>
 
             <button class="header-icon-btn" id="btn-export-json" title="Экспортировать JSON">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 <span>Экспорт</span>
             </button>
 
             <button class="header-icon-btn" id="btn-import-json" title="Загрузить сохраненную конфигурацию">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                 <span>Импорт</span>
             </button>
 
@@ -97,7 +97,7 @@
                     <span class="fs-dot">•</span>
                     <span class="fs-price-item">Опции: <strong id="footer-equipment-price">0 ₽</strong></span>
                     <button class="fs-details-link price-info-trigger">
-                        Детализация цены ⓘ
+                        Детализация цены
                     </button>
                 </div>
             </div>
@@ -127,10 +127,9 @@
         <div class="modal-card conflict-dialog">
             <div class="modal-header">
                 <div class="modal-title-wrap">
-                    <span class="modal-icon-warning">⚠️</span>
                     <h3 class="modal-title" id="conflict-modal-title">Несовместимость оборудования</h3>
                 </div>
-                <button class="modal-close-btn" id="conflict-modal-close">✕</button>
+                <button class="modal-close-btn" id="conflict-modal-close">&times;</button>
             </div>
 
             <div class="modal-body">
@@ -161,13 +160,42 @@
         <div class="modal-card price-breakdown-dialog">
             <div class="modal-header">
                 <h3 class="modal-title">Детализация расчета стоимости (Total MSRP)</h3>
-                <button class="modal-close-btn" id="price-modal-close">✕</button>
+                <button class="modal-close-btn" id="price-modal-close">&times;</button>
             </div>
             <div class="modal-body" id="price-breakdown-content">
                 <!-- Breakdown rows inserted dynamically -->
             </div>
         </div>
     </div>
+
+    <!-- MODAL: Share Porsche Code & Server Persistence -->
+    <div class="modal-overlay" id="share-modal">
+        <div class="modal-card share-dialog">
+            <div class="modal-header">
+                <h3 class="modal-title">Код сборки Porsche</h3>
+                <button class="modal-close-btn" id="share-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="share-modal-intro">
+                    Уникальный идентификатор вашей индивидуальной конфигурации. Используйте его для восстановления сборки или передачи дилеру Porsche.
+                </p>
+                <div class="share-code-display">
+                    <span class="share-code-label">Porsche Code:</span>
+                    <strong class="share-code-value" id="share-modal-code">PR-911-GTS-000000</strong>
+                </div>
+                <div class="share-link-wrapper">
+                    <input type="text" readonly id="share-modal-link" class="share-link-input" value="">
+                    <button class="modal-action-btn btn-accept" id="btn-copy-share-link">Копировать</button>
+                </div>
+                <div class="share-status-bar" id="share-modal-status">
+                    <!-- Dynamic server / local status -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="app-toast" id="app-toast"></div>
 
     <!-- Main JavaScript Modules -->
     <script type="module" src="js/data.js"></script>

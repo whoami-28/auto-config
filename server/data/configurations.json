@@ -1,0 +1,36 @@
+{
+  "PR-911-GTS-KAIPXQ": {
+    "porscheCode": "PR-911-GTS-KAIPXQ",
+    "config": {
+      "modelId": "911",
+      "trimId": "911_carrera_gts",
+      "colorId": "paint_guards_red",
+      "wheelId": "wheel_20_21_rs_spyder",
+      "wheelFinishId": "wf_satin_black",
+      "caliperId": "caliper_red",
+      "interiorId": "int_leather_black",
+      "seatId": "seat_power_14way",
+      "options": [
+        "opt_sport_chrono",
+        "opt_sport_exhaust"
+      ]
+    },
+    "pricing": {
+      "basePriceUSD": 178000,
+      "totalEquipmentPriceUSD": 16460,
+      "deliveryFeeUSD": 2350,
+      "totalPriceUSD": 196810,
+      "currency": "USD",
+      "symbol": "$",
+      "formatted": {
+        "basePrice": "$178 000",
+        "equipmentPrice": "$16 460",
+        "deliveryFee": "$2 350",
+        "totalPrice": "$196 810"
+      }
+    },
+    "isValid": true,
+    "conflicts": [],
+    "createdAt": "2026-10-08T05:52:55.764Z"
+  }
+}

@@ -647,16 +647,22 @@ export class ConfiguratorEngine {
         }, null, 2);
     }
 
+    importState(newState) {
+        if (!newState) return false;
+        const cfg = newState.config || newState;
+        if (cfg.modelId && cfg.trimId) {
+            this.state = Object.assign({}, this.state, cfg);
+            this.syncStateWithModelAndTrim();
+            this.notify('import', this.state);
+            return true;
+        }
+        return false;
+    }
+
     importJSON(jsonString) {
         try {
             const data = JSON.parse(jsonString);
-            const cfg = data.config || data;
-            if (cfg.modelId && cfg.trimId) {
-                this.state = Object.assign({}, this.state, cfg);
-                this.syncStateWithModelAndTrim();
-                this.notify('import', this.state);
-                return true;
-            }
+            return this.importState(data);
         } catch (e) {
             console.error('Invalid configuration JSON:', e);
         }

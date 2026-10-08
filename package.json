@@ -1,0 +1,20 @@
+{
+  "name": "auto-config",
+  "version": "1.1.0",
+  "description": "Porsche Car Configurator with Node.js backend",
+  "type": "module",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node --watch server/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/whoami-28/auto-config.git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.2.1"
+  }
+}

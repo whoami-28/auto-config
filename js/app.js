@@ -46,6 +46,7 @@ export class App {
         this.bindGlobalEvents();
         this.renderCurrentStep();
         this.updateHeaderAndFooterPrices();
+        this.checkUrlForSharedCode();
     }
 
     renderStepNavigation() {
@@ -146,6 +147,28 @@ export class App {
         const btnImportJson = document.getElementById('btn-import-json');
         if (btnImportJson) {
             btnImportJson.addEventListener('click', () => this.openImportModal());
+        }
+
+        // Share modal actions
+        const shareModalClose = document.getElementById('share-modal-close');
+        if (shareModalClose) {
+            shareModalClose.addEventListener('click', () => this.closeShareModal());
+        }
+
+        const btnCopyShareLink = document.getElementById('btn-copy-share-link');
+        if (btnCopyShareLink) {
+            btnCopyShareLink.addEventListener('click', () => {
+                const linkInput = document.getElementById('share-modal-link');
+                if (linkInput && linkInput.value) {
+                    navigator.clipboard.writeText(linkInput.value).then(() => {
+                        this.showToast('Ссылка скопирована в буфер обмена');
+                        btnCopyShareLink.textContent = 'Скопировано';
+                        setTimeout(() => {
+                            btnCopyShareLink.textContent = 'Копировать';
+                        }, 2000);
+                    });
+                }
+            });
         }
 
         // Close modals when clicking on background overlay
@@ -346,7 +369,7 @@ export class App {
                             </div>
 
                             <button class="trim-btn ${isSelected ? 'selected' : ''}">
-                                ${isSelected ? '✓ Выбрано' : 'Выбрать комплектацию'}
+                                ${isSelected ? 'Выбрано' : 'Выбрать комплектацию'}
                             </button>
                         </div>
                     `;
@@ -402,7 +425,7 @@ export class App {
                                     return `
                                         <div class="color-swatch-card ${isSelected ? 'selected' : ''}" data-color-id="${c.id}" title="${c.nameRu}">
                                             <div class="swatch-circle" style="background-color: ${c.hex}; ${c.metallic ? 'box-shadow: inset 0 0 8px rgba(255,255,255,0.4);' : ''}">
-                                                ${isSelected ? '<span class="swatch-check">✓</span>' : ''}
+                                                ${isSelected ? '<span class="swatch-check">•</span>' : ''}
                                             </div>
                                             <span class="swatch-name">${c.name}</span>
                                             <span class="swatch-price">${c.price === 0 ? '0 ₽' : `+${priceInfo.format(c.price)}`}</span>
@@ -439,7 +462,7 @@ export class App {
                                     <p class="wheel-desc">${w.description}</p>
                                     ${requiresGTS ? `
                                         <div class="conflict-badge-inline">
-                                            ⚠️ Требует модификацию GTS / Turbo S
+                                            Требует модификацию GTS / Turbo S
                                         </div>
                                     ` : ''}
                                 </div>
@@ -582,7 +605,7 @@ export class App {
                         return `
                             <div class="seat-card ${isSelected ? 'selected' : ''}" data-seat-id="${seat.id}">
                                 <div class="seat-badge-icon">
-                                    ${seat.isBucket ? '🏎️ Carbon Bucket' : '🛋️ Electric'}
+                                    ${seat.isBucket ? 'Carbon Bucket' : 'Adaptive Sport'}
                                 </div>
                                 <div class="seat-info">
                                     <div class="seat-title-row">
@@ -592,7 +615,7 @@ export class App {
                                     <p class="seat-desc">${seat.description}</p>
                                     ${hasVentConflict ? `
                                         <div class="conflict-badge-inline">
-                                            ⚠️ Несовместимо с активной опцией «Вентиляция сидений»
+                                            Несовместимо с активной опцией «Вентиляция сидений»
                                         </div>
                                     ` : ''}
                                 </div>
@@ -686,14 +709,14 @@ export class App {
 
                                         ${hasConflict ? `
                                             <div class="conflict-alert-card" title="Кликните для авто-разрешения">
-                                                <span class="alert-icon">⚠️</span>
+                                                <span class="alert-icon">•</span>
                                                 <span class="alert-text">${conflict.reason}</span>
                                             </div>
                                         ` : ''}
 
                                         <div class="opt-card-footer">
                                             <button class="opt-toggle-btn ${isSelected ? 'btn-active' : ''}">
-                                                ${isSelected ? '✓ Добавлено' : (hasConflict ? 'Выбрать с разрешением' : '+ Добавить')}
+                                                ${isSelected ? 'Добавлено' : (hasConflict ? 'Выбрать с разрешением' : '+ Добавить')}
                                             </button>
                                         </div>
                                     </div>
@@ -752,7 +775,7 @@ export class App {
                 <div class="search-input-wrapper">
                     <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                     <input type="text" id="options-search-input" class="search-input" placeholder="Поиск опций по названию или PR-коду (например, PCCB, Chrono, 4D3)..." value="${this.searchQuery}">
-                    ${this.searchQuery ? '<button id="btn-clear-search" class="clear-search-btn">✕</button>' : ''}
+                    ${this.searchQuery ? '<button id="btn-clear-search" class="clear-search-btn">&times;</button>' : ''}
                 </div>
                 <span class="search-hits-count">Найдено опций: ${filteredOptions.length}</span>
             </div>
@@ -871,11 +894,11 @@ export class App {
                             </div>
                             <div class="item-col-actions">
                                 <button class="btn-item-change" data-target-step="${item.stepIndex}" title="Перейти к изменению">
-                                    Изменить ✎
+                                    Изменить
                                 </button>
                                 ${item.removable ? `
                                     <button class="btn-item-remove" data-option-id="${item.id}" title="Удалить опцию">
-                                        ✕
+                                        &times;
                                     </button>
                                 ` : ''}
                             </div>
@@ -906,7 +929,7 @@ export class App {
         if (copyBtn) {
             copyBtn.addEventListener('click', () => {
                 navigator.clipboard.writeText(porscheCode).then(() => {
-                    copyBtn.innerHTML = `✓ Скопировано!`;
+                    copyBtn.innerHTML = `Скопировано!`;
                     setTimeout(() => {
                         copyBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Скопировать код`;
                     }, 2000);
@@ -953,7 +976,7 @@ export class App {
         if (conflict.addedOptions && conflict.addedOptions.length > 0) {
             diffHtml += `
                 <div class="diff-section added">
-                    <span class="diff-title">🟢 Будет добавлено в комплектацию:</span>
+                    <span class="diff-title">Будет добавлено в комплектацию:</span>
                     <ul>
                         ${conflict.addedOptions.map(id => {
                             const opt = CONFIG_DATA.options.find(o => o.id === id);
@@ -967,7 +990,7 @@ export class App {
         if (conflict.removedOptions && conflict.removedOptions.length > 0) {
             diffHtml += `
                 <div class="diff-section removed">
-                    <span class="diff-title">🔴 Будет удалено из комплектации:</span>
+                    <span class="diff-title">Будет удалено из комплектации:</span>
                     <ul>
                         ${conflict.removedOptions.map(id => {
                             const opt = CONFIG_DATA.options.find(o => o.id === id);
@@ -1048,11 +1071,114 @@ export class App {
     }
 
     /**
-     * Share & JSON export
+     * Toast notification helper
      */
-    openShareModal() {
-        const code = this.engine.generatePorscheCode();
-        alert(`Ваш Porsche Code: ${code}\nСсылка для шеринга: ${window.location.origin}${window.location.pathname}#code=${code}`);
+    showToast(message) {
+        const toast = document.getElementById('app-toast');
+        if (!toast) return;
+        toast.textContent = message;
+        toast.classList.add('visible');
+        clearTimeout(this.toastTimeout);
+        this.toastTimeout = setTimeout(() => {
+            toast.classList.remove('visible');
+        }, 2600);
+    }
+
+    /**
+     * Share & Server Persistence
+     */
+    async saveConfigurationToServer() {
+        try {
+            const response = await fetch('/api/config/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(this.engine.getState())
+            });
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    return {
+                        isServer: true,
+                        porscheCode: data.porscheCode,
+                        url: `${window.location.origin}${window.location.pathname}#code=${data.porscheCode}`
+                    };
+                }
+            }
+        } catch (err) {
+            // Server offline or static hosting
+        }
+
+        const localCode = this.engine.generatePorscheCode();
+        return {
+            isServer: false,
+            porscheCode: localCode,
+            url: `${window.location.origin}${window.location.pathname}#code=${localCode}`
+        };
+    }
+
+    async openShareModal() {
+        const modal = document.getElementById('share-modal');
+        if (!modal) return;
+
+        const codeEl = document.getElementById('share-modal-code');
+        const linkEl = document.getElementById('share-modal-link');
+        const statusEl = document.getElementById('share-modal-status');
+        const copyBtn = document.getElementById('btn-copy-share-link');
+
+        if (codeEl) codeEl.textContent = 'Сохранение...';
+        if (linkEl) linkEl.value = '';
+        if (statusEl) statusEl.textContent = 'Синхронизация...';
+
+        modal.classList.add('visible');
+
+        const result = await this.saveConfigurationToServer();
+
+        if (codeEl) codeEl.textContent = result.porscheCode;
+        if (linkEl) linkEl.value = result.url;
+        if (copyBtn) copyBtn.textContent = 'Копировать';
+
+        if (statusEl) {
+            if (result.isServer) {
+                statusEl.innerHTML = '<span style="color:#ffffff;">●</span> Сохранено на сервере Node.js';
+            } else {
+                statusEl.innerHTML = '<span style="color:#71717a;">●</span> Локальный код сборки (GitHub Pages)';
+            }
+        }
+    }
+
+    closeShareModal() {
+        const modal = document.getElementById('share-modal');
+        if (modal) modal.classList.remove('visible');
+    }
+
+    async checkUrlForSharedCode() {
+        const hash = window.location.hash;
+        const search = window.location.search;
+        let code = null;
+
+        if (hash && hash.includes('code=')) {
+            const match = hash.match(/code=([^&]+)/);
+            if (match) code = decodeURIComponent(match[1]);
+        } else if (search && search.includes('code=')) {
+            const urlParams = new URLSearchParams(search);
+            code = urlParams.get('code');
+        }
+
+        if (!code) return;
+
+        try {
+            const response = await fetch(`/api/config/${encodeURIComponent(code)}`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.data && data.data.config) {
+                    this.engine.importState(data.data.config);
+                    this.showToast(`Конфигурация ${code} загружена с сервера`);
+                    return;
+                }
+            }
+        } catch (err) {
+            // Server offline
+        }
     }
 
     downloadJSON() {
@@ -1064,6 +1190,7 @@ export class App {
         a.download = `porsche-config-${this.engine.generatePorscheCode()}.json`;
         a.click();
         URL.revokeObjectURL(url);
+        this.showToast('Конфигурация сохранена в файл JSON');
     }
 
     openImportModal() {
@@ -1077,9 +1204,9 @@ export class App {
             reader.onload = (event) => {
                 const success = this.engine.importJSON(event.target.result);
                 if (success) {
-                    alert('Конфигурация успешно загружена!');
+                    this.showToast('Конфигурация успешно импортирована');
                 } else {
-                    alert('Ошибка при чтении файла конфигурации!');
+                    this.showToast('Ошибка при чтении файла конфигурации');
                 }
             };
             reader.readAsText(file);

@@ -1,44 +1,43 @@
 /**
- * Porsche Configurator Design System
- * Sleek, luxury automotive dark theme with Porsche red & gold accents,
- * responsive split-screen layout, and print stylesheet.
+ * Porsche Configurator Minimalist Design System
+ * Aesthetic: Pure black and grey shades, soft deep shadows,
+ * hairline borders, minimal icons, geometric clean forms.
  */
 
 :root {
-    --bg-main: #0c0d0f;
-    --bg-surface: #14161a;
-    --bg-surface-elevated: #1a1d22;
-    --bg-card: #181a1f;
-    --bg-card-hover: #20232a;
+    /* Pure Black & Neutral Greyscale Palette */
+    --bg-main: #09090b;
+    --bg-surface: #111113;
+    --bg-surface-elevated: #161619;
+    --bg-card: #131316;
+    --bg-card-hover: #1b1b20;
     
     --border-color: rgba(255, 255, 255, 0.08);
-    --border-color-hover: rgba(255, 255, 255, 0.2);
-    --border-active: #d5001c;
+    --border-color-hover: rgba(255, 255, 255, 0.22);
+    --border-active: #ffffff;
     
     --text-primary: #ffffff;
-    --text-secondary: #9ea3ae;
-    --text-muted: #6a6f7b;
+    --text-secondary: #9a9aa3;
+    --text-muted: #5e5e68;
     
-    --porsche-red: #d5001c;
-    --porsche-red-hover: #b00017;
-    --porsche-gold: #c69f37;
-    --accent-blue: #0070d2;
-    --warning-amber: #e69138;
-    --success-green: #2fa839;
+    --btn-primary-bg: #ffffff;
+    --btn-primary-text: #09090b;
+    --btn-secondary-bg: #161619;
+    --btn-secondary-border: rgba(255, 255, 255, 0.12);
     
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-heading: 'Montserrat', var(--font-sans);
     
-    --header-height: 64px;
-    --footer-height: 74px;
-    --radius-sm: 4px;
-    --radius-md: 8px;
-    --radius-lg: 14px;
+    --header-height: 60px;
+    --footer-height: 68px;
+    --radius-sm: 2px;
+    --radius-md: 4px;
+    --radius-lg: 6px;
     
-    --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.4);
-    --shadow-elevated: 0 10px 40px rgba(0, 0, 0, 0.6);
-    --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    --transition-smooth: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.55);
+    --shadow-elevated: 0 16px 40px rgba(0, 0, 0, 0.75);
+    --transition-fast: 0.18s ease;
+    --transition-smooth: 0.28s ease;
 }
 
 /* Base Reset */
@@ -54,7 +53,7 @@ html, body {
     background-color: var(--bg-main);
     color: var(--text-primary);
     font-family: var(--font-sans);
-    font-size: 14px;
+    font-size: 13.5px;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     overflow: hidden;
@@ -70,12 +69,11 @@ button {
 }
 
 /* ==========================================================================
-   GLOBAL HEADER
+   MINIMALIST GLOBAL HEADER
    ========================================================================== */
 .app-header {
     height: var(--header-height);
-    background: rgba(14, 15, 18, 0.94);
-    backdrop-filter: blur(16px);
+    background: #09090b;
     border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
@@ -88,26 +86,21 @@ button {
 .header-left {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 20px;
 }
 
 .porsche-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.brand-crest {
     display: flex;
     align-items: center;
 }
 
 .brand-wordmark {
     font-family: var(--font-heading);
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 800;
-    letter-spacing: 5px;
+    letter-spacing: 6px;
     color: var(--text-primary);
+    text-transform: uppercase;
 }
 
 .header-vehicle-badge {
@@ -116,15 +109,16 @@ button {
 }
 
 .header-vehicle-name {
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 500;
     color: var(--text-secondary);
+    letter-spacing: 0.3px;
 }
 
 .header-right {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
 }
 
 .currency-wrapper {
@@ -134,19 +128,21 @@ button {
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
-    padding: 4px 10px;
+    padding: 4px 8px;
 }
 
 .currency-label {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .currency-select {
     background: transparent;
     border: none;
     color: var(--text-primary);
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 600;
     cursor: pointer;
     outline: none;
@@ -157,21 +153,20 @@ button {
     color: var(--text-primary);
 }
 
-.header-icon-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 12px;
+.header-btn {
+    padding: 6px 14px;
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
-    font-size: 12px;
-    font-weight: 500;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
     color: var(--text-secondary);
     transition: all var(--transition-fast);
 }
 
-.header-icon-btn:hover {
+.header-btn:hover {
     border-color: var(--border-color-hover);
     color: var(--text-primary);
     background: var(--bg-card-hover);
@@ -181,29 +176,29 @@ button {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    margin-left: 8px;
+    margin-left: 6px;
     padding-left: 16px;
     border-left: 1px solid var(--border-color);
 }
 
 .hlp-label {
-    font-size: 10px;
+    font-size: 9.5px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     color: var(--text-muted);
 }
 
 .hlp-amount {
     font-family: var(--font-heading);
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     color: var(--text-primary);
     cursor: pointer;
-    transition: color var(--transition-fast);
+    transition: opacity var(--transition-fast);
 }
 
 .hlp-amount:hover {
-    color: var(--porsche-red);
+    opacity: 0.8;
 }
 
 /* ==========================================================================
@@ -220,7 +215,7 @@ button {
 .visualizer-pane {
     flex: 1.15;
     height: 100%;
-    background: #090a0c;
+    background: #070709;
     position: relative;
     border-right: 1px solid var(--border-color);
     display: flex;
@@ -248,7 +243,7 @@ button {
 .step-nav-bar {
     display: flex;
     align-items: center;
-    background: var(--bg-surface);
+    background: #09090b;
     border-bottom: 1px solid var(--border-color);
     padding: 0 16px;
     overflow-x: auto;
@@ -264,41 +259,33 @@ button {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 16px 14px;
-    color: var(--text-secondary);
-    font-size: 13px;
-    font-weight: 500;
+    padding: 15px 14px;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
     border-bottom: 2px solid transparent;
     transition: all var(--transition-fast);
-    position: relative;
 }
 
 .step-tab:hover {
-    color: var(--text-primary);
+    color: var(--text-secondary);
 }
 
 .step-tab.active {
     color: var(--text-primary);
-    font-weight: 700;
-    border-bottom-color: var(--porsche-red);
+    border-bottom-color: #ffffff;
 }
 
 .step-num {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--bg-surface-elevated);
+    font-size: 10px;
     color: var(--text-muted);
-    font-size: 11px;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 .step-tab.active .step-num {
-    background: var(--porsche-red);
-    color: #ffffff;
+    color: var(--text-primary);
 }
 
 /* Scrollable Option Content */
@@ -307,28 +294,20 @@ button {
     overflow-y: auto;
     padding: 32px 36px 80px 36px;
     scrollbar-width: thin;
-    scrollbar-color: rgba(255,255,255,0.15) transparent;
+    scrollbar-color: rgba(255,255,255,0.1) transparent;
 }
 
 .config-panel-scroll::-webkit-scrollbar {
-    width: 6px;
-}
-
-.config-panel-scroll::-webkit-scrollbar-track {
-    background: transparent;
+    width: 4px;
 }
 
 .config-panel-scroll::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 3px;
-}
-
-.config-panel-scroll::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 2px;
 }
 
 /* ==========================================================================
-   VISUALIZER COMPONENT
+   MINIMALIST VISUALIZER
    ========================================================================== */
 .visualizer-wrapper {
     width: 100%;
@@ -337,15 +316,7 @@ button {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.6s ease;
-}
-
-.scene-day {
-    background: radial-gradient(circle at 50% 45%, #22262d 0%, #0d0f12 75%, #07080a 100%);
-}
-
-.scene-night {
-    background: radial-gradient(circle at 50% 45%, #151821 0%, #090b0e 75%, #030406 100%);
+    background: #070709;
 }
 
 .visualizer-stage-photo {
@@ -363,17 +334,16 @@ button {
     height: 100%;
     object-fit: contain;
     max-height: 82vh;
-    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.85));
-    transition: transform var(--transition-smooth), opacity 0.3s ease;
+    filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.9));
+    transition: transform var(--transition-smooth), opacity 0.25s ease;
     user-select: none;
-    -webkit-user-drag: none;
 }
 
 .visualizer-gradient-vignette {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: radial-gradient(circle at center, transparent 45%, rgba(9, 10, 12, 0.7) 100%);
+    background: radial-gradient(circle at center, transparent 50%, rgba(7, 7, 9, 0.75) 100%);
 }
 
 /* Floating Vehicle Badge on Visualizer */
@@ -386,30 +356,31 @@ button {
 }
 
 .badge-series {
-    font-size: 11px;
+    font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 2px;
-    color: var(--porsche-gold);
-    font-weight: 700;
+    color: var(--text-muted);
+    font-weight: 600;
 }
 
 .badge-title {
     font-family: var(--font-heading);
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 800;
     color: var(--text-primary);
     margin: 2px 0 10px 0;
+    letter-spacing: -0.5px;
 }
 
 .badge-specs {
     display: flex;
     align-items: center;
     gap: 14px;
-    background: rgba(18, 20, 24, 0.7);
-    backdrop-filter: blur(8px);
+    background: rgba(14, 14, 16, 0.85);
     border: 1px solid var(--border-color);
-    padding: 8px 14px;
+    padding: 6px 12px;
     border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-soft);
 }
 
 .badge-spec-item {
@@ -418,23 +389,25 @@ button {
 }
 
 .spec-val {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     color: var(--text-primary);
 }
 
 .spec-lbl {
-    font-size: 10px;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     color: var(--text-muted);
 }
 
 .badge-spec-divider {
     width: 1px;
-    height: 22px;
+    height: 18px;
     background: var(--border-color);
 }
 
-/* Visualizer Controls (Angles & Lighting) */
+/* Minimalist Angle & Lighting Switchers */
 .visualizer-angle-bar {
     position: absolute;
     bottom: 24px;
@@ -442,35 +415,35 @@ button {
     transform: translateX(-50%);
     display: flex;
     align-items: center;
-    gap: 6px;
-    background: rgba(20, 22, 26, 0.85);
-    backdrop-filter: blur(12px);
+    gap: 4px;
+    background: rgba(14, 14, 16, 0.9);
     border: 1px solid var(--border-color);
-    padding: 6px;
-    border-radius: 30px;
+    padding: 4px;
+    border-radius: var(--radius-sm);
     z-index: 15;
+    box-shadow: var(--shadow-soft);
 }
 
 .angle-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 10.5px;
     font-weight: 600;
-    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
     transition: all var(--transition-fast);
 }
 
 .angle-btn:hover {
     color: var(--text-primary);
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .angle-btn.active {
     background: #ffffff;
-    color: #111112;
+    color: #09090b;
+    font-weight: 700;
 }
 
 .visualizer-env-bar {
@@ -479,22 +452,20 @@ button {
     right: 28px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     z-index: 15;
 }
 
 .env-toggle-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 12px;
-    background: rgba(20, 22, 26, 0.85);
-    backdrop-filter: blur(12px);
+    padding: 6px 10px;
+    background: rgba(14, 14, 16, 0.9);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
-    color: var(--text-secondary);
-    font-size: 12px;
+    color: var(--text-muted);
+    font-size: 10.5px;
     font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
     transition: all var(--transition-fast);
 }
 
@@ -504,11 +475,10 @@ button {
 }
 
 .env-toggle-btn.active {
-    background: var(--porsche-red);
-    color: #ffffff;
+    background: #ffffff;
+    color: #09090b;
 }
 
-/* Fullscreen mode */
 .visualizer-fullscreen {
     position: fixed;
     top: 0;
@@ -519,26 +489,27 @@ button {
 }
 
 /* ==========================================================================
-   STEP CONTENT STYLING
+   MINIMALIST STEP CONTENT
    ========================================================================== */
 .step-header {
-    margin-bottom: 28px;
+    margin-bottom: 26px;
 }
 
 .step-tag {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    color: var(--porsche-red);
+    color: var(--text-muted);
 }
 
 .step-header h2 {
     font-family: var(--font-heading);
-    font-size: 24px;
+    font-size: 21px;
     font-weight: 800;
     color: var(--text-primary);
     margin: 4px 0 6px 0;
+    letter-spacing: -0.3px;
 }
 
 .step-desc {
@@ -548,53 +519,53 @@ button {
 }
 
 .config-subgroup {
-    margin-bottom: 32px;
-    padding-bottom: 28px;
+    margin-bottom: 28px;
+    padding-bottom: 24px;
     border-bottom: 1px solid var(--border-color);
 }
 
 .subgroup-title {
-    font-family: var(--font-heading);
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
     color: var(--text-primary);
-    margin-bottom: 16px;
+    margin-bottom: 14px;
 }
 
-/* Step 0: Models Grid */
+/* Step 0: Model Cards */
 .model-cards-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 14px;
 }
 
 .model-card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 22px;
+    border-radius: var(--radius-sm);
+    padding: 18px;
     cursor: pointer;
+    box-shadow: var(--shadow-soft);
     transition: all var(--transition-smooth);
 }
 
 .model-card:hover {
     border-color: var(--border-color-hover);
     background: var(--bg-card-hover);
-    transform: translateY(-2px);
 }
 
 .model-card.selected {
-    border-color: var(--porsche-red);
-    box-shadow: 0 0 0 1px var(--porsche-red);
+    border-color: var(--border-active);
 }
 
 .model-card-image-wrap {
     width: 100%;
-    height: 150px;
+    height: 160px;
     border-radius: var(--radius-sm);
     overflow: hidden;
     margin-bottom: 14px;
-    background: #090a0c;
+    background: #000;
 }
 
 .model-card-img {
@@ -605,43 +576,44 @@ button {
 }
 
 .model-card:hover .model-card-img {
-    transform: scale(1.05);
+    transform: scale(1.03);
 }
 
 .model-series {
-    font-size: 11px;
-    font-weight: 700;
+    font-size: 10px;
+    font-weight: 600;
     text-transform: uppercase;
-    color: var(--porsche-gold);
+    color: var(--text-muted);
     letter-spacing: 1px;
 }
 
 .model-title {
     font-family: var(--font-heading);
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 800;
     margin: 2px 0 4px 0;
 }
 
 .model-tagline {
-    font-size: 13px;
+    font-size: 12.5px;
     color: var(--text-secondary);
-    margin-bottom: 14px;
+    margin-bottom: 12px;
 }
 
 .model-card-price {
-    margin-bottom: 16px;
+    margin-bottom: 14px;
 }
 
 .price-from {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-muted);
     margin-right: 4px;
+    text-transform: uppercase;
 }
 
 .price-amount {
     font-family: var(--font-heading);
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
     color: var(--text-primary);
 }
@@ -650,9 +622,10 @@ button {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     background: var(--bg-surface);
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
-    padding: 10px 14px;
-    margin-bottom: 16px;
+    padding: 8px 12px;
+    margin-bottom: 14px;
 }
 
 .spec-cell {
@@ -661,8 +634,10 @@ button {
 }
 
 .spec-cell .spec-label {
-    font-size: 10px;
+    font-size: 9px;
     color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .spec-cell .spec-val {
@@ -673,35 +648,38 @@ button {
 
 .model-select-btn {
     width: 100%;
-    padding: 10px;
+    padding: 8px;
     border-radius: var(--radius-sm);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
     background: var(--bg-surface-elevated);
     border: 1px solid var(--border-color);
-    color: var(--text-primary);
+    color: var(--text-secondary);
     transition: all var(--transition-fast);
 }
 
 .model-select-btn.active, .model-card:hover .model-select-btn {
-    background: var(--porsche-red);
-    border-color: var(--porsche-red);
-    color: #ffffff;
+    background: #ffffff;
+    border-color: #ffffff;
+    color: #09090b;
 }
 
 /* Step 1: Trims List */
 .trim-list {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
 }
 
 .trim-card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 22px;
+    border-radius: var(--radius-sm);
+    padding: 18px;
     cursor: pointer;
+    box-shadow: var(--shadow-soft);
     transition: all var(--transition-smooth);
 }
 
@@ -711,20 +689,19 @@ button {
 }
 
 .trim-card.selected {
-    border-color: var(--porsche-red);
-    box-shadow: 0 0 0 1px var(--porsche-red);
+    border-color: var(--border-active);
 }
 
 .trim-card-top {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .trim-name {
     font-family: var(--font-heading);
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 800;
 }
 
@@ -739,30 +716,32 @@ button {
 
 .trim-price {
     font-family: var(--font-heading);
-    font-size: 17px;
+    font-size: 15px;
     font-weight: 700;
     color: var(--text-primary);
     display: block;
 }
 
 .trim-msrp {
-    font-size: 10px;
+    font-size: 9.5px;
     color: var(--text-muted);
+    text-transform: uppercase;
 }
 
 .trim-desc {
-    font-size: 12.5px;
+    font-size: 12px;
     color: var(--text-secondary);
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .trim-benchmark-bar {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     background: var(--bg-surface);
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
-    padding: 10px 14px;
-    margin-bottom: 16px;
+    padding: 8px 12px;
+    margin-bottom: 14px;
 }
 
 .bench-item {
@@ -771,67 +750,72 @@ button {
 }
 
 .bench-val {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
 }
 
 .bench-lbl {
-    font-size: 10px;
+    font-size: 9px;
     color: var(--text-muted);
+    text-transform: uppercase;
 }
 
 .trim-btn {
     width: 100%;
-    padding: 9px;
+    padding: 8px;
     border-radius: var(--radius-sm);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
     background: var(--bg-surface-elevated);
     border: 1px solid var(--border-color);
-    color: var(--text-primary);
+    color: var(--text-secondary);
     transition: all var(--transition-fast);
 }
 
 .trim-btn.selected, .trim-card:hover .trim-btn {
-    background: var(--porsche-red);
-    border-color: var(--porsche-red);
-    color: #ffffff;
+    background: #ffffff;
+    border-color: #ffffff;
+    color: #09090b;
 }
 
 /* Step 2: Exterior (Colors & Wheels) */
 .color-category-block {
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
 .category-header {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .cat-name {
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 700;
-    color: var(--text-primary);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
 }
 
 .cat-price-info {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-muted);
 }
 
 .color-swatches-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+    gap: 8px;
 }
 
 .color-swatch-card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
-    padding: 12px 10px;
+    padding: 10px 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -846,38 +830,37 @@ button {
 }
 
 .color-swatch-card.selected {
-    border-color: var(--porsche-red);
-    box-shadow: 0 0 0 1px var(--porsche-red);
+    border-color: var(--border-active);
 }
 
 .swatch-circle {
-    width: 44px;
-    height: 44px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 3px 8px rgba(0,0,0,0.4);
 }
 
 .swatch-check {
     color: #ffffff;
-    font-weight: 900;
-    font-size: 14px;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    font-weight: 700;
+    font-size: 11px;
+    text-shadow: 0 1px 2px #000;
 }
 
 .swatch-name {
-    font-size: 11.5px;
+    font-size: 11px;
     font-weight: 600;
     line-height: 1.2;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .swatch-price {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--text-muted);
 }
 
@@ -885,17 +868,17 @@ button {
 .wheels-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
 .wheel-option-card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
-    padding: 14px 16px;
+    padding: 12px 14px;
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
     cursor: pointer;
     transition: all var(--transition-fast);
 }
@@ -906,8 +889,7 @@ button {
 }
 
 .wheel-option-card.selected {
-    border-color: var(--porsche-red);
-    box-shadow: 0 0 0 1px var(--porsche-red);
+    border-color: var(--border-active);
 }
 
 .wheel-info {
@@ -918,38 +900,38 @@ button {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .wheel-name {
-    font-size: 13.5px;
+    font-size: 12.5px;
     font-weight: 700;
 }
 
 .wheel-price {
-    font-size: 12.5px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--text-primary);
 }
 
 .wheel-desc {
-    font-size: 12px;
+    font-size: 11.5px;
     color: var(--text-secondary);
 }
 
 .radio-indicator {
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
-    border: 2px solid var(--border-color-hover);
+    border: 1px solid var(--border-color-hover);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .radio-indicator.checked {
-    border-color: var(--porsche-red);
-    background: var(--porsche-red);
+    border-color: #ffffff;
+    background: #ffffff;
 }
 
 .radio-indicator.checked::after {
@@ -957,24 +939,24 @@ button {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #ffffff;
+    background: #09090b;
 }
 
 /* Wheel Finishes & Calipers Grid */
 .wheel-finishes-grid, .calipers-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 8px;
 }
 
 .wheel-finish-card, .caliper-card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
-    padding: 12px;
+    padding: 10px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     cursor: pointer;
     transition: all var(--transition-fast);
 }
@@ -984,15 +966,14 @@ button {
 }
 
 .wheel-finish-card.selected, .caliper-card.selected {
-    border-color: var(--porsche-red);
-    box-shadow: 0 0 0 1px var(--porsche-red);
+    border-color: var(--border-active);
 }
 
 .finish-swatch, .caliper-dot {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .finish-info, .caliper-info {
@@ -1001,40 +982,41 @@ button {
 }
 
 .finish-name, .caliper-name {
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 600;
 }
 
 .finish-price, .caliper-price {
-    font-size: 11px;
+    font-size: 10.5px;
     color: var(--text-muted);
 }
 
 .caliper-badge {
     margin-left: auto;
-    font-size: 10px;
-    background: rgba(198, 159, 55, 0.2);
-    color: var(--porsche-gold);
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-weight: 700;
+    font-size: 9px;
+    background: var(--bg-surface-elevated);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 2px 5px;
+    border-radius: 2px;
+    text-transform: uppercase;
 }
 
 /* Step 3: Interior & Seats */
 .interior-list, .seats-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
 .interior-card, .seat-card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
-    padding: 14px 16px;
+    padding: 12px 14px;
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
     cursor: pointer;
     transition: all var(--transition-fast);
 }
@@ -1045,14 +1027,13 @@ button {
 }
 
 .interior-card.selected, .seat-card.selected {
-    border-color: var(--porsche-red);
-    box-shadow: 0 0 0 1px var(--porsche-red);
+    border-color: var(--border-active);
 }
 
 .interior-swatch-preview {
-    width: 36px;
-    height: 36px;
-    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    border-radius: 2px;
     border: 1px solid rgba(255, 255, 255, 0.15);
     position: relative;
     overflow: hidden;
@@ -1067,13 +1048,16 @@ button {
     height: 50%;
 }
 
-.seat-badge-icon {
-    font-size: 12px;
+.seat-badge-text {
+    font-size: 10px;
     font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
     background: var(--bg-surface);
-    padding: 6px 8px;
-    border-radius: var(--radius-sm);
-    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    padding: 4px 6px;
+    border-radius: 2px;
+    color: var(--text-muted);
 }
 
 .interior-info, .seat-info {
@@ -1084,21 +1068,21 @@ button {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .interior-name, .seat-name {
-    font-size: 13.5px;
+    font-size: 12.5px;
     font-weight: 700;
 }
 
 .interior-price, .seat-price {
-    font-size: 12.5px;
+    font-size: 12px;
     font-weight: 600;
 }
 
 .interior-desc, .seat-desc {
-    font-size: 12px;
+    font-size: 11.5px;
     color: var(--text-secondary);
 }
 
@@ -1107,23 +1091,26 @@ button {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 24px;
+    gap: 14px;
+    margin-bottom: 20px;
 }
 
 .search-input-wrapper {
     flex: 1;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
-    padding: 10px 14px;
+    padding: 8px 12px;
 }
 
-.search-icon {
+.search-icon-text {
+    font-size: 11px;
     color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .search-input {
@@ -1132,24 +1119,26 @@ button {
     border: none;
     outline: none;
     color: var(--text-primary);
-    font-size: 13px;
+    font-size: 12.5px;
 }
 
 .clear-search-btn {
     color: var(--text-muted);
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .search-hits-count {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     white-space: nowrap;
 }
 
 .option-category-accordion {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
     background: var(--bg-surface);
     overflow: hidden;
 }
@@ -1158,7 +1147,7 @@ button {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 20px;
+    padding: 14px 18px;
     background: var(--bg-surface);
     cursor: pointer;
     user-select: none;
@@ -1172,35 +1161,39 @@ button {
 .cat-accordion-left {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 .cat-accordion-title {
-    font-family: var(--font-heading);
-    font-size: 14.5px;
+    font-size: 12.5px;
     font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .cat-selected-badge {
-    background: var(--porsche-red);
-    color: #ffffff;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 10px;
+    background: var(--bg-surface-elevated);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 2px;
 }
 
-.cat-accordion-arrow {
+.cat-accordion-indicator {
+    font-size: 10px;
+    color: var(--text-muted);
     transition: transform var(--transition-fast);
 }
 
-.option-category-accordion.open .cat-accordion-arrow {
+.option-category-accordion.open .cat-accordion-indicator {
     transform: rotate(180deg);
 }
 
 .cat-accordion-content {
     display: none;
-    padding: 16px;
+    padding: 12px;
     background: var(--bg-main);
 }
 
@@ -1211,14 +1204,14 @@ button {
 .options-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 8px;
 }
 
 .option-item-card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
-    padding: 16px;
+    padding: 14px;
     cursor: pointer;
     transition: all var(--transition-fast);
 }
@@ -1229,91 +1222,71 @@ button {
 }
 
 .option-item-card.selected {
-    border-color: var(--porsche-red);
-    box-shadow: 0 0 0 1px var(--porsche-red);
+    border-color: var(--border-active);
 }
 
 .opt-card-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
 .opt-meta {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 .opt-code {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     color: var(--text-muted);
     background: var(--bg-surface);
-    padding: 2px 6px;
-    border-radius: 3px;
-}
-
-.opt-tag-highlight {
-    font-size: 10px;
-    font-weight: 800;
-    text-transform: uppercase;
-    color: var(--porsche-gold);
-    background: rgba(198, 159, 55, 0.15);
-    padding: 2px 6px;
-    border-radius: 3px;
+    padding: 2px 5px;
+    border-radius: 2px;
+    border: 1px solid var(--border-color);
 }
 
 .opt-price {
     font-family: var(--font-heading);
-    font-size: 13.5px;
+    font-size: 13px;
     font-weight: 700;
     color: var(--text-primary);
 }
 
 .opt-name {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
 }
 
 .opt-desc {
-    font-size: 12px;
+    font-size: 11.5px;
     color: var(--text-secondary);
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     line-height: 1.4;
 }
 
 .conflict-alert-card {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(230, 145, 56, 0.12);
-    border: 1px solid rgba(230, 145, 56, 0.3);
-    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 6px 10px;
     border-radius: var(--radius-sm);
-    margin-bottom: 12px;
-}
-
-.conflict-alert-card .alert-icon {
-    font-size: 14px;
-}
-
-.conflict-alert-card .alert-text {
-    font-size: 11.5px;
-    color: #ffb86c;
-    font-weight: 600;
+    margin-bottom: 10px;
+    font-size: 11px;
+    color: var(--text-secondary);
 }
 
 .conflict-badge-inline {
-    margin-top: 6px;
-    font-size: 11px;
-    color: #ffb86c;
-    background: rgba(230, 145, 56, 0.1);
+    margin-top: 4px;
+    font-size: 10.5px;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
     display: inline-block;
     padding: 2px 6px;
-    border-radius: 3px;
+    border-radius: 2px;
+    border: 1px solid var(--border-color);
 }
 
 .opt-card-footer {
@@ -1322,32 +1295,33 @@ button {
 }
 
 .opt-toggle-btn {
-    padding: 6px 14px;
+    padding: 5px 12px;
     border-radius: var(--radius-sm);
-    font-size: 12px;
+    font-size: 10.5px;
     font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
     background: var(--bg-surface-elevated);
     border: 1px solid var(--border-color);
-    color: var(--text-primary);
+    color: var(--text-secondary);
     transition: all var(--transition-fast);
 }
 
 .opt-toggle-btn.btn-active, .option-item-card.selected .opt-toggle-btn {
-    background: var(--porsche-red);
-    border-color: var(--porsche-red);
-    color: #ffffff;
+    background: #ffffff;
+    border-color: #ffffff;
+    color: #09090b;
 }
 
 /* Step 5: Summary */
 .summary-hero-card {
     width: 100%;
-    height: 250px;
-    border-radius: var(--radius-md);
+    height: 240px;
+    border-radius: var(--radius-sm);
     overflow: hidden;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     border: 1px solid var(--border-color);
-    background: #090a0c;
-    position: relative;
+    background: #000000;
 }
 
 .summary-hero-img {
@@ -1357,61 +1331,61 @@ button {
 }
 
 .summary-code-card {
-    background: linear-gradient(135deg, #181b22 0%, #111317 100%);
+    background: var(--bg-surface);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 22px;
+    border-radius: var(--radius-sm);
+    padding: 18px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .code-badge {
-    font-size: 10px;
-    font-weight: 800;
+    font-size: 9.5px;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    color: var(--porsche-gold);
+    color: var(--text-muted);
 }
 
 .porsche-code-text {
     font-family: var(--font-heading);
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 800;
-    letter-spacing: 3px;
+    letter-spacing: 2.5px;
     color: #ffffff;
     margin: 2px 0 4px 0;
 }
 
 .code-sub {
-    font-size: 12px;
+    font-size: 11.5px;
     color: var(--text-secondary);
 }
 
 .code-card-actions {
     display: flex;
-    gap: 10px;
+    gap: 8px;
 }
 
 .code-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 10px 16px;
+    padding: 8px 14px;
     border-radius: var(--radius-sm);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
     transition: all var(--transition-fast);
 }
 
 .code-btn.primary {
-    background: var(--porsche-red);
-    color: #ffffff;
+    background: #ffffff;
+    color: #09090b;
+    border: 1px solid #ffffff;
 }
 
 .code-btn.primary:hover {
-    background: var(--porsche-red-hover);
+    opacity: 0.9;
 }
 
 .code-btn.secondary {
@@ -1427,35 +1401,36 @@ button {
 .summary-price-box, .summary-equipment-box {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 22px;
-    margin-bottom: 24px;
+    border-radius: var(--radius-sm);
+    padding: 18px;
+    margin-bottom: 20px;
 }
 
 .summary-sec-title {
-    font-family: var(--font-heading);
-    font-size: 16px;
+    font-size: 13px;
     font-weight: 800;
-    margin-bottom: 16px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
 }
 
 .price-summary-table {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
 .price-row {
     display: flex;
     justify-content: space-between;
-    font-size: 13px;
+    font-size: 12.5px;
     color: var(--text-secondary);
-    padding-bottom: 8px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .price-row.total-highlight {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 800;
     color: var(--text-primary);
     border-bottom: none;
@@ -1464,53 +1439,52 @@ button {
 
 .price-val-total {
     font-family: var(--font-heading);
-    font-size: 20px;
-    color: var(--porsche-red);
+    font-size: 18px;
+    color: #ffffff;
 }
 
 .equip-sec-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
 }
 
 .items-count-badge {
-    font-size: 11px;
+    font-size: 10px;
     background: var(--bg-surface-elevated);
-    padding: 3px 8px;
-    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    padding: 2px 6px;
+    border-radius: 2px;
     color: var(--text-muted);
 }
 
 .summary-items-table {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 }
 
 .summary-item-row {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
-    padding: 10px 14px;
+    padding: 8px 12px;
 }
 
 .item-col-cat {
-    width: 140px;
+    width: 130px;
     flex-shrink: 0;
 }
 
 .cat-pill {
-    font-size: 10px;
+    font-size: 9.5px;
     font-weight: 700;
     text-transform: uppercase;
-    background: rgba(255, 255, 255, 0.06);
-    padding: 2px 6px;
-    border-radius: 3px;
+    letter-spacing: 0.5px;
     color: var(--text-muted);
 }
 
@@ -1521,33 +1495,33 @@ button {
 }
 
 .item-name {
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 600;
 }
 
 .item-code-tag {
-    font-size: 10px;
+    font-size: 9.5px;
     color: var(--text-muted);
 }
 
 .item-col-price {
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 700;
-    min-width: 90px;
+    min-width: 80px;
     text-align: right;
 }
 
 .item-col-actions {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 .btn-item-change {
-    font-size: 11.5px;
+    font-size: 10.5px;
     color: var(--text-secondary);
-    padding: 4px 8px;
-    border-radius: 3px;
+    padding: 3px 6px;
+    border-radius: 2px;
     background: var(--bg-surface-elevated);
     border: 1px solid var(--border-color);
     transition: all var(--transition-fast);
@@ -1556,38 +1530,38 @@ button {
 .btn-item-change:hover {
     color: #ffffff;
     border-color: var(--border-color-hover);
-    background: var(--bg-card-hover);
 }
 
 .btn-item-remove {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    border-radius: 2px;
     color: var(--text-muted);
     background: var(--bg-surface-elevated);
+    border: 1px solid var(--border-color);
+    font-size: 11px;
     transition: all var(--transition-fast);
 }
 
 .btn-item-remove:hover {
     color: #ffffff;
-    background: var(--porsche-red);
+    border-color: #ffffff;
 }
 
 /* ==========================================================================
-   STICKY FOOTER PRICING BAR
+   MINIMALIST STICKY FOOTER
    ========================================================================== */
 .app-footer {
     height: var(--footer-height);
-    background: rgba(14, 15, 18, 0.96);
-    backdrop-filter: blur(16px);
+    background: #09090b;
     border-top: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 32px;
+    padding: 0 28px;
     position: relative;
     z-index: 100;
 }
@@ -1598,7 +1572,7 @@ button {
 }
 
 .fs-car-name {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     color: var(--text-primary);
 }
@@ -1607,7 +1581,7 @@ button {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 12px;
+    font-size: 11.5px;
     color: var(--text-muted);
 }
 
@@ -1616,7 +1590,7 @@ button {
 }
 
 .fs-details-link {
-    color: var(--porsche-gold);
+    color: var(--text-secondary);
     font-size: 11px;
     margin-left: 6px;
     cursor: pointer;
@@ -1635,33 +1609,32 @@ button {
 }
 
 .total-label {
-    font-size: 10px;
+    font-size: 9.5px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     color: var(--text-muted);
 }
 
 .total-number {
     font-family: var(--font-heading);
-    font-size: 22px;
-    font-weight: 900;
+    font-size: 18px;
+    font-weight: 800;
     color: var(--text-primary);
 }
 
 .footer-right {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
 }
 
 .footer-nav-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 10px 20px;
+    padding: 8px 18px;
     border-radius: var(--radius-sm);
-    font-size: 13px;
+    font-size: 11.5px;
     font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
     transition: all var(--transition-fast);
 }
 
@@ -1677,21 +1650,22 @@ button {
 }
 
 .prev-btn:disabled {
-    opacity: 0.3;
+    opacity: 0.25;
     cursor: not-allowed;
 }
 
 .next-btn {
-    background: var(--porsche-red);
-    color: #ffffff;
+    background: #ffffff;
+    border: 1px solid #ffffff;
+    color: #09090b;
 }
 
 .next-btn:hover {
-    background: var(--porsche-red-hover);
+    opacity: 0.9;
 }
 
 /* ==========================================================================
-   MODAL DIALOGS
+   MINIMALIST MODAL DIALOGS
    ========================================================================== */
 .modal-overlay {
     position: fixed;
@@ -1699,7 +1673,7 @@ button {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(8px);
     display: none;
     align-items: center;
@@ -1712,53 +1686,33 @@ button {
 }
 
 .modal-card {
-    background: var(--bg-surface-elevated);
+    background: var(--bg-surface);
     border: 1px solid var(--border-color-hover);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
     box-shadow: var(--shadow-elevated);
     width: 90%;
-    max-width: 580px;
+    max-width: 520px;
     overflow: hidden;
-    animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes modalPop {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
 }
 
 .modal-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 18px 24px;
+    padding: 16px 20px;
     border-bottom: 1px solid var(--border-color);
 }
 
-.modal-title-wrap {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.modal-icon-warning {
-    font-size: 20px;
-}
-
 .modal-title {
-    font-family: var(--font-heading);
-    font-size: 17px;
+    font-size: 13.5px;
     font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-primary);
 }
 
 .modal-close-btn {
-    font-size: 16px;
+    font-size: 14px;
     color: var(--text-muted);
 }
 
@@ -1767,94 +1721,90 @@ button {
 }
 
 .modal-body {
-    padding: 24px;
+    padding: 20px;
     max-height: 70vh;
     overflow-y: auto;
 }
 
 .conflict-reason-text {
-    font-size: 13.5px;
-    color: var(--text-primary);
+    font-size: 13px;
+    color: var(--text-secondary);
     line-height: 1.5;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
 }
 
 .resolution-summary-text {
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin-bottom: 16px;
-    background: rgba(255, 255, 255, 0.04);
-    padding: 12px;
+    font-size: 12.5px;
+    color: var(--text-primary);
+    margin-bottom: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 10px;
     border-radius: var(--radius-sm);
-    border-left: 3px solid var(--porsche-red);
 }
 
 .diff-section {
-    margin-bottom: 14px;
-    padding: 12px;
+    margin-bottom: 12px;
+    padding: 10px;
     border-radius: var(--radius-sm);
-}
-
-.diff-section.added {
-    background: rgba(47, 168, 57, 0.1);
-    border: 1px solid rgba(47, 168, 57, 0.3);
-}
-
-.diff-section.removed {
-    background: rgba(213, 0, 28, 0.1);
-    border: 1px solid rgba(213, 0, 28, 0.3);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
 }
 
 .diff-title {
-    font-size: 12px;
+    font-size: 10.5px;
     font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
     margin-bottom: 6px;
     display: block;
 }
 
 .diff-section ul {
     list-style: none;
-    padding-left: 8px;
-    font-size: 12.5px;
+    font-size: 12px;
 }
 
 .diff-section li {
-    margin-bottom: 4px;
+    margin-bottom: 3px;
 }
 
 .diff-price-delta {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-card);
     border: 1px solid var(--border-color);
-    padding: 10px 14px;
+    padding: 10px 12px;
     border-radius: var(--radius-sm);
-    font-size: 13px;
+    font-size: 12px;
     margin-top: 10px;
 }
 
 .diff-price-delta strong {
     font-family: var(--font-heading);
-    font-size: 15px;
-    color: var(--porsche-gold);
+    font-size: 14px;
+    color: #ffffff;
 }
 
 .modal-footer {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 12px;
-    padding: 16px 24px;
-    background: var(--bg-surface);
+    gap: 8px;
+    padding: 14px 20px;
+    background: var(--bg-surface-elevated);
     border-top: 1px solid var(--border-color);
 }
 
 .modal-action-btn {
-    padding: 10px 18px;
+    padding: 8px 16px;
     border-radius: var(--radius-sm);
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
     transition: all var(--transition-fast);
 }
 
@@ -1870,27 +1820,28 @@ button {
 }
 
 .modal-action-btn.btn-accept {
-    background: var(--porsche-red);
-    color: #ffffff;
+    background: #ffffff;
+    border: 1px solid #ffffff;
+    color: #09090b;
 }
 
 .modal-action-btn.btn-accept:hover {
-    background: var(--porsche-red-hover);
+    opacity: 0.9;
 }
 
 /* Price Breakdown Modal Content */
 .modal-breakdown-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
 }
 
 .mb-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 13px;
-    padding-bottom: 8px;
+    font-size: 12.5px;
+    padding-bottom: 6px;
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -1898,11 +1849,12 @@ button {
     font-weight: 700;
     color: var(--text-muted);
     text-transform: uppercase;
-    font-size: 11px;
+    font-size: 10px;
+    letter-spacing: 0.5px;
 }
 
 .mb-cat {
-    font-size: 10.5px;
+    font-size: 9.5px;
     color: var(--text-muted);
     text-transform: uppercase;
 }
@@ -1917,19 +1869,110 @@ button {
 
 .mb-row.total-row {
     border-bottom: none;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 800;
-    padding-top: 10px;
+    padding-top: 8px;
 }
 
 .mb-total-price {
-    color: var(--porsche-red);
     font-family: var(--font-heading);
-    font-size: 18px;
+    font-size: 16px;
+    color: #ffffff;
+}
+
+/* Toast Notification */
+.app-toast {
+    position: fixed;
+    bottom: 84px;
+    right: 28px;
+    background: #ffffff;
+    color: #09090b;
+    padding: 10px 18px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    box-shadow: var(--shadow-elevated);
+    z-index: 2000;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.25s ease;
+    pointer-events: none;
+}
+
+.app-toast.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Share Modal Styles */
+.share-modal-intro {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 16px;
+}
+
+.share-code-display {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 14px 18px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.share-code-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+}
+
+.share-code-value {
+    font-family: var(--font-heading);
+    font-size: 16px;
+    letter-spacing: 1.5px;
+    color: #ffffff;
+}
+
+.share-link-wrapper {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.share-link-input {
+    flex: 1;
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    outline: none;
+    font-family: monospace;
+}
+
+.share-link-input:focus {
+    border-color: var(--border-color-hover);
+    color: var(--text-primary);
+}
+
+.share-status-bar {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 /* ==========================================================================
-   PRINT STYLESHEET (PDF & Printing Brochure)
+   PRINT STYLESHEET
    ========================================================================== */
 @media print {
     body {
@@ -1938,7 +1981,7 @@ button {
         overflow: visible !important;
     }
 
-    .app-header, .step-nav-bar, .app-footer, .visualizer-angle-bar, .visualizer-env-bar, .btn-item-change, .btn-item-remove, .code-btn, .modal-overlay {
+    .app-header, .step-nav-bar, .app-footer, .visualizer-angle-bar, .visualizer-env-bar, .btn-item-change, .btn-item-remove, .code-btn, .modal-overlay, .app-toast {
         display: none !important;
     }
 
@@ -1949,9 +1992,12 @@ button {
 
     .visualizer-pane {
         border: none !important;
-        background: #f7f7f8 !important;
-        height: 380px !important;
-        page-break-after: avoid;
+        background: #ffffff !important;
+        height: 360px !important;
+    }
+
+    .visualizer-hero-image {
+        filter: none !important;
     }
 
     .config-pane {
@@ -1961,27 +2007,23 @@ button {
 
     .config-panel-scroll {
         overflow: visible !important;
-        padding: 20px !important;
+        padding: 16px !important;
     }
 
-    .summary-code-card, .summary-price-box, .summary-equipment-box, .summary-item-row {
+    .summary-hero-card, .summary-code-card, .summary-price-box, .summary-equipment-box, .summary-item-row {
         background: #ffffff !important;
-        border: 1px solid #ddd !important;
+        border: 1px solid #ccc !important;
         color: #111112 !important;
         box-shadow: none !important;
     }
 
-    .porsche-code-text, .step-header h2, .summary-sec-title, .item-name {
+    .porsche-code-text, .step-header h2, .summary-sec-title, .item-name, .price-val-total {
         color: #111112 !important;
-    }
-
-    .price-val-total {
-        color: #d5001c !important;
     }
 }
 
 /* ==========================================================================
-   RESPONSIVE DESIGN (Tablets & Mobile)
+   RESPONSIVE DESIGN
    ========================================================================== */
 @media (max-width: 1024px) {
     .configurator-app {
@@ -2003,15 +2045,11 @@ button {
 
     .config-panel-scroll {
         overflow-y: visible;
-        padding: 20px 20px 100px 20px;
+        padding: 20px 20px 90px 20px;
     }
 
     .app-footer {
         padding: 0 16px;
-    }
-
-    .total-number {
-        font-size: 18px;
     }
 }
 
@@ -2020,7 +2058,7 @@ button {
         padding: 0 16px;
     }
 
-    .header-vehicle-badge, .header-icon-btn span {
+    .header-vehicle-badge, .header-btn {
         display: none;
     }
 
@@ -2040,7 +2078,7 @@ button {
     .summary-item-row {
         flex-direction: column;
         align-items: flex-start;
-        gap: 8px;
+        gap: 6px;
     }
 
     .item-col-price {
