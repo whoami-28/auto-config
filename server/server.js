@@ -107,9 +107,12 @@ app.use((req, res) => {
 });
 
 // Start Server if run directly
-const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1]);
+const isDirectRun = process.argv[1] && (
+    fileURLToPath(import.meta.url).toLowerCase() === path.resolve(process.argv[1]).toLowerCase() ||
+    process.argv[1].endsWith('server.js')
+);
 if (isDirectRun) {
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
         console.log(`Porsche Configurator Node.js server running at http://localhost:${PORT}`);
         console.log(`Database connected: SQLite (server/data/configurator.db)`);
     });

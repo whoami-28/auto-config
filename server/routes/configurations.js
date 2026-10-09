@@ -51,7 +51,18 @@ function getFullConfigByCode(code) {
         userId: configRow.user_id,
         owner: configRow.owner_username ? { id: configRow.user_id, username: configRow.owner_username } : null,
         title: configRow.title,
+        name: configRow.title,
         status: configRow.status,
+        modelId: configRow.model_id,
+        trimId: configRow.trim_id,
+        colorId: configRow.color_id,
+        wheelId: configRow.wheel_id,
+        wheelFinishId: configRow.wheel_finish_id,
+        caliperId: configRow.caliper_id,
+        interiorId: configRow.interior_id,
+        seatId: configRow.seat_id,
+        options,
+        totalPrice: configRow.total_price,
         config: configObj,
         pricing,
         createdAt: configRow.created_at,
@@ -95,6 +106,9 @@ router.post('/', optionalAuthMiddleware, (req, res) => {
     const body = req.body || {};
     const config = body.config || body;
 
+    const rawOptions = config.options || config.selectedOptions || body.options || body.selectedOptions || [];
+    config.options = Array.isArray(rawOptions) ? rawOptions : [];
+
     if (!config || !config.modelId || !config.trimId) {
         return res.status(400).json({
             success: false,
@@ -117,7 +131,11 @@ router.post('/', optionalAuthMiddleware, (req, res) => {
         });
     }
 
-    const trim = model.trims.find(t => t.id === config.trimId);
+    let trim = model.trims.find(t => t.id === config.trimId);
+    if (!trim && config.trimId) {
+        trim = model.trims.find(t => t.id.toLowerCase().includes(config.trimId.toLowerCase()) || config.trimId.toLowerCase().includes(t.id.toLowerCase()));
+        if (trim) config.trimId = trim.id;
+    }
     if (!trim) {
         return res.status(400).json({
             success: false,
@@ -133,6 +151,7 @@ router.post('/', optionalAuthMiddleware, (req, res) => {
     if (!validation.isValid) {
         return res.status(422).json({
             success: false,
+            conflicts: validation.conflicts,
             error: {
                 code: 'COMPATIBILITY_CONFLICT',
                 message: 'Конфигурация содержит несовместимые опции',
@@ -144,7 +163,7 @@ router.post('/', optionalAuthMiddleware, (req, res) => {
     const pricing = calculateServerPrice(config);
     const porscheCode = (body.porscheCode || config.porscheCode || generatePorscheCode(config)).trim().toUpperCase();
     const userId = req.user ? req.user.id : null;
-    const title = body.title || `${model.name} ${trim.name}`;
+    const title = body.name || body.title || `${model.name} ${trim.name}`;
 
     // Transactional database insert or update if already exists
     const saveConfigTx = db.transaction(() => {
@@ -358,11 +377,17 @@ router.put('/:code', authMiddleware, (req, res) => {
     const body = req.body || {};
     const config = body.config || body;
 
+    const rawOptions = config.options || config.selectedOptions || body.options || body.selectedOptions;
+    if (rawOptions !== undefined) {
+        config.options = Array.isArray(rawOptions) ? rawOptions : [];
+    }
+
     // Validate rules
     const validation = validateServerRules(config);
     if (!validation.isValid) {
         return res.status(422).json({
             success: false,
+            conflicts: validation.conflicts,
             error: {
                 code: 'COMPATIBILITY_CONFLICT',
                 message: 'Конфигурация содержит несовместимые опции',
@@ -372,7 +397,7 @@ router.put('/:code', authMiddleware, (req, res) => {
     }
 
     const pricing = calculateServerPrice(config);
-    const title = body.title || existing.title;
+    const title = body.name || body.title || existing.title;
 
     const updateTx = db.transaction(() => {
         db.prepare(`

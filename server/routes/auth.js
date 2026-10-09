@@ -17,7 +17,7 @@ const router = express.Router();
  * Registers a new user.
  */
 router.post('/register', (req, res) => {
-    const { username, email, password } = req.body;
+    const { username, email, password } = req.body || {};
 
     if (!username || !email || !password) {
         return res.status(400).json({
@@ -63,11 +63,14 @@ router.post('/register', (req, res) => {
     const existing = db.prepare('SELECT id, username, email FROM users WHERE username = ? OR email = ?').get(username, email);
     if (existing) {
         const field = existing.username.toLowerCase() === username.toLowerCase() ? 'Имя пользователя' : 'Email';
+        const errorMsg = `${field} уже зарегистрирован в системе`;
         return res.status(409).json({
             success: false,
-            error: {
+            error: errorMsg,
+            message: errorMsg,
+            details: {
                 code: 'USER_EXISTS',
-                message: `${field} уже зарегистрирован в системе`
+                message: errorMsg
             }
         });
     }
@@ -105,7 +108,7 @@ router.post('/register', (req, res) => {
  * Authenticates user credentials and returns JWT.
  */
 router.post('/login', (req, res) => {
-    const { identifier, username, email, login, password } = req.body;
+    const { identifier, username, email, login, password } = req.body || {};
     const loginUser = identifier || username || email || login;
 
     if (!loginUser || !password) {
@@ -172,6 +175,7 @@ router.get('/me', authMiddleware, (req, res) => {
     res.json({
         success: true,
         data: {
+            ...req.user,
             user: req.user,
             stats: {
                 savedConfigurations: configCount,

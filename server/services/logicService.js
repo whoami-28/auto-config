@@ -18,7 +18,9 @@ export function calculateServerPrice(config) {
     const interior = CONFIG_DATA.interiors.find(i => i.id === config.interiorId) || CONFIG_DATA.interiors[0];
     const seat = CONFIG_DATA.seats.find(s => s.id === config.seatId) || CONFIG_DATA.seats[0];
 
-    const selectedOptions = (config.options || [])
+    const rawOptions = config.options || config.selectedOptions || [];
+    const options = Array.isArray(rawOptions) ? rawOptions : [];
+    const selectedOptions = options
         .map(id => CONFIG_DATA.options.find(o => o.id === id))
         .filter(Boolean);
 
@@ -71,8 +73,12 @@ export function validateServerRules(config) {
     const conflicts = [];
 
     const seat = CONFIG_DATA.seats.find(s => s.id === config.seatId);
-    const wheel = CONFIG_DATA.wheels.find(w => w.id === config.wheelId);
-    const options = config.options || [];
+    let wheel = CONFIG_DATA.wheels.find(w => w.id === config.wheelId);
+    if (!wheel && config.wheelId) {
+        wheel = CONFIG_DATA.wheels.find(w => (config.wheelId.includes('19_20') && w.size === '19/20') || w.id.includes(config.wheelId));
+    }
+    const rawOptions = config.options || config.selectedOptions || [];
+    const options = Array.isArray(rawOptions) ? rawOptions : [];
 
     // Rule 1: Full Bucket Seats vs Seat Ventilation
     if (seat && seat.isBucket && options.includes('opt_seat_ventilation')) {

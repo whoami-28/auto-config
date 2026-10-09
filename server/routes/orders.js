@@ -135,9 +135,22 @@ router.post('/', authMiddleware, (req, res) => {
     res.status(201).json({
         success: true,
         message: 'Заказ успешно оформлен и передан официальному дилеру',
-        data: createdOrder
+        data: formatOrder(createdOrder)
     });
 });
+
+function formatOrder(row) {
+    if (!row) return null;
+    return {
+        ...row,
+        orderNumber: row.order_number,
+        porscheCode: row.porsche_code,
+        totalPrice: row.total_price,
+        dealerCenter: row.dealer_city,
+        dealerCity: row.dealer_city,
+        createdAt: row.created_at
+    };
+}
 
 /**
  * GET /api/orders
@@ -155,7 +168,7 @@ router.get('/', authMiddleware, (req, res) => {
     res.json({
         success: true,
         count: orders.length,
-        data: orders
+        data: orders.map(formatOrder)
     });
 });
 
@@ -198,7 +211,7 @@ router.get('/:orderNumber', authMiddleware, (req, res) => {
 
     res.json({
         success: true,
-        data: order
+        data: formatOrder(order)
     });
 });
 
@@ -263,7 +276,7 @@ router.patch('/:orderNumber/status', authMiddleware, (req, res) => {
     res.json({
         success: true,
         message: `Статус заказа успешно изменен на "${newStatus}"`,
-        data: updated
+        data: formatOrder(updated)
     });
 });
 
