@@ -2034,9 +2034,12 @@ export class App {
     </div>
 
     <div class="header">
-        <div>
-            <div class="brand-title">P O R S C H E</div>
-            <div class="brand-sub">Exclusive Manufaktur • Individual Specification</div>
+        <div style="display: flex; align-items: center; gap: 14px;">
+            <img src="assets/images/porsche_crest_black.png" alt="Porsche Crest" style="height: 44px; width: auto; object-fit: contain;">
+            <div>
+                <div class="brand-title">P O R S C H E</div>
+                <div class="brand-sub">Exclusive Manufaktur • Individual Specification</div>
+            </div>
         </div>
         <div class="doc-meta">
             <div>Porsche Code: <span class="code-highlight">${porscheCode}</span></div>

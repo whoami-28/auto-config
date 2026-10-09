@@ -92,6 +92,30 @@ button {
 .porsche-brand {
     display: flex;
     align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    user-select: none;
+}
+
+.brand-crest {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.brand-crest-img {
+    height: 28px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.15));
+    transition: transform var(--transition-fast), filter var(--transition-fast);
+}
+
+.porsche-brand:hover .brand-crest-img {
+    transform: scale(1.06);
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
 }
 
 .brand-wordmark {
