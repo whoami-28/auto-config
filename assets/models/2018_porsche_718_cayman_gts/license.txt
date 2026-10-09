@@ -1,0 +1,11 @@
+Model Information:
+* title:	2018 Porsche 718 Cayman GTS
+* source:	https://sketchfab.com/3d-models/2018-porsche-718-cayman-gts-ed07dfc50f8146aea10143232657c061
+* author:	Ddiaz Design (https://sketchfab.com/ddiaz-design)
+
+Model License:
+* license type:	CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
+* requirements:	Author must be credited. No commercial use. Modified versions must have the same license.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "2018 Porsche 718 Cayman GTS" (https://sketchfab.com/3d-models/2018-porsche-718-cayman-gts-ed07dfc50f8146aea10143232657c061) by Ddiaz Design (https://sketchfab.com/ddiaz-design) licensed under CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)

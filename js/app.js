@@ -83,7 +83,7 @@ export class App {
         if (this.steps[stepIdx].id === 'interior') {
             this.engine.setViewAngle('interior_cockpit');
         } else if (this.steps[stepIdx].id !== 'interior' && this.engine.getState().viewAngle === 'interior_cockpit') {
-            this.engine.setViewAngle('front_three_quarter');
+            this.engine.setViewAngle('exterior_34_front');
         }
 
         // Scroll options pane to top smoothly

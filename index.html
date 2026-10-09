@@ -348,9 +348,20 @@
     <!-- Notification Toast -->
     <div class="app-toast" id="app-toast"></div>
 
+    <!-- Three.js ES Module Import Map -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "./js/vendor/three/three.module.js",
+            "three/addons/": "./js/vendor/three/"
+        }
+    }
+    </script>
+
     <!-- Main JavaScript Modules -->
     <script type="module" src="js/data.js"></script>
     <script type="module" src="js/engine.js"></script>
+    <script type="module" src="js/three_visualizer.js"></script>
     <script type="module" src="js/visualizer.js"></script>
     <script type="module" src="js/app.js"></script>
 </body>

@@ -1,0 +1,11 @@
+Model Information:
+* title:	2017 Porsche Panamera Turbo
+* source:	https://sketchfab.com/3d-models/2017-porsche-panamera-turbo-f472abb10e07442b80f46ade49a24d64
+* author:	Ddiaz Design (https://sketchfab.com/ddiaz-design)
+
+Model License:
+* license type:	CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
+* requirements:	Author must be credited. No commercial use. Modified versions must have the same license.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "2017 Porsche Panamera Turbo" (https://sketchfab.com/3d-models/2017-porsche-panamera-turbo-f472abb10e07442b80f46ade49a24d64) by Ddiaz Design (https://sketchfab.com/ddiaz-design) licensed under CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
