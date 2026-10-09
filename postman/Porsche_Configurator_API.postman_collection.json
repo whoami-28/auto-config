@@ -1,0 +1,1028 @@
+{
+	"info": {
+		"_postman_id": "c1f7a28e-8e3b-482a-9f5b-b9d4e5f0a711",
+		"name": "Porsche Car Configurator REST API (Node.js + Express + SQLite)",
+		"description": "Комплексная коллекция Postman для тестирования серверной части Porsche Car Configurator.\n\nВключает тесты для:\n- Регистрации, JWT-аутентификации и проверки прав доступа;\n- Каталога моделей (включая Porsche Macan, Cayenne, 911, 718, Taycan, Panamera) и конфигураций салона;\n- Создания, чтения, обновления и удаления конфигураций (CRUD);\n- Серверных расчетов стоимости и проверки правил совместимости (бизнес-логика);\n- Оформления заказов и валидации переходов состояний (State Machine);\n- Обработки ошибок и возврата корректных HTTP-статусов (200, 201, 400, 401, 403, 404, 409, 422, 500).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/api",
+			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user2Token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "porscheCode",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "orderNumber",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Аутентификация (Auth)",
+			"item": [
+				{
+					"name": "1.1 Регистрация пользователя (201 Created)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const ts = Date.now();",
+									"pm.environment.set('reg_username', 'driver_' + ts);",
+									"pm.environment.set('reg_email', 'driver_' + ts + '@porsche.de');"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 201 Created', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Response contains valid JWT token and user details', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data).to.have.property('token');",
+									"    pm.expect(jsonData.data.user).to.have.property('id');",
+									"    pm.collectionVariables.set('authToken', jsonData.data.token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{reg_username}}\",\n    \"email\": \"{{reg_email}}\",\n    \"password\": \"PorscheFast#2026\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					}
+				},
+				{
+					"name": "1.2 Ошибка регистрации - дубликат email/username (409 Conflict)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 409 Conflict', function () {",
+									"    pm.response.to.have.status(409);",
+									"});",
+									"",
+									"pm.test('Structured error message returned', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"    pm.expect(jsonData.error).to.be.a('string');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{reg_username}}\",\n    \"email\": \"{{reg_email}}\",\n    \"password\": \"PorscheFast#2026\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					}
+				},
+				{
+					"name": "1.3 Вход в систему (200 OK)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Token returned and saved to authToken', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data.token).to.be.a('string');",
+									"    pm.collectionVariables.set('authToken', jsonData.data.token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"login\": \"demo\",\n    \"password\": \"porsche123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					}
+				},
+				{
+					"name": "1.4 Ошибка входа - неверный пароль (401 Unauthorized)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401 Unauthorized', function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test('Error response format is valid', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"login\": \"demo\",\n    \"password\": \"wrong_password_xyz\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					}
+				},
+				{
+					"name": "1.5 Профиль текущего пользователя (200 OK)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('User payload is correct', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data.username).to.equal('demo');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/auth/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"me"
+							]
+						}
+					}
+				},
+				{
+					"name": "1.6 Ошибка доступа без токена (401 Unauthorized)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401 Unauthorized', function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"me"
+							]
+						}
+					}
+				},
+				{
+					"name": "1.7 Регистрация второго пользователя для тестов изоляции (201 Created)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 201 Created', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('User 2 token saved to user2Token', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.collectionVariables.set('user2Token', jsonData.data.token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"other_user_{{$timestamp}}\",\n    \"email\": \"other_{{$timestamp}}@porsche.de\",\n    \"password\": \"SecondDriverPass!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Каталог и Мониторинг (Catalog & Health)",
+			"item": [
+				{
+					"name": "2.1 Проверка состояния сервиса (200 OK)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Status is ok and uptime reported', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.equal('ok');",
+									"    pm.expect(jsonData.uptime).to.be.at.least(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					}
+				},
+				{
+					"name": "2.2 Полный каталог моделей, отделок и опций (200 OK)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Catalog contains all models including Macan and Cayenne', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    const models = jsonData.data.models;",
+									"    pm.expect(models).to.be.an('array');",
+									"    pm.expect(models.length).to.be.at.least(6);",
+									"    const modelIds = models.map(m => m.id);",
+									"    pm.expect(modelIds).to.include.members(['911', '718', 'taycan', 'panamera', 'macan', 'cayenne']);",
+									"});",
+									"",
+									"pm.test('Catalog contains distinct interior leather options', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const interiors = jsonData.data.interiors;",
+									"    pm.expect(interiors.length).to.be.at.least(4);",
+									"    const interiorIds = interiors.map(i => i.id);",
+									"    pm.expect(interiorIds).to.include.members(['leather_bordeaux', 'leather_racetex', 'leather_truffle']);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/catalog",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"catalog"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Конфигурации (Configurations CRUD & Logic)",
+			"item": [
+				{
+					"name": "3.1 Создание валидной конфигурации (201 Created)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 201 Created', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Generated Porsche Code and calculated MSRP pricing', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data.porscheCode).to.be.a('string');",
+									"    pm.expect(jsonData.data.totalPrice).to.be.above(0);",
+									"    pm.expect(jsonData.data.options).to.be.an('array').with.lengthOf(2);",
+									"    pm.collectionVariables.set('porscheCode', jsonData.data.porscheCode);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"My Porsche Macan GTS Studio Edition\",\n    \"modelId\": \"macan\",\n    \"trimId\": \"macan_gts\",\n    \"colorId\": \"c_carmine\",\n    \"wheelId\": \"w_spyder\",\n    \"wheelFinishId\": \"wf_satin_black\",\n    \"caliperId\": \"cal_red\",\n    \"interiorId\": \"leather_bordeaux\",\n    \"seatId\": \"seats_18way\",\n    \"selectedOptions\": [\"opt_burmester\", \"opt_sport_chrono\"],\n    \"currency\": \"EUR\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/configurations",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"configurations"
+							]
+						}
+					}
+				},
+				{
+					"name": "3.2 Проверка серверной бизнес-логики - конфликт опций (422 Unprocessable)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 422 Unprocessable Entity', function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									"",
+									"pm.test('Conflict rule triggered: PCCB requires at least 20-inch wheels', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"    pm.expect(jsonData.conflicts).to.be.an('array');",
+									"    pm.expect(jsonData.conflicts.length).to.be.at.least(1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Invalid Conflict Spec\",\n    \"modelId\": \"911\",\n    \"trimId\": \"carrera\",\n    \"colorId\": \"c_guards_red\",\n    \"wheelId\": \"w_carrera_19_20\",\n    \"interiorId\": \"leather_black\",\n    \"selectedOptions\": [\"opt_pccb\"],\n    \"currency\": \"EUR\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/configurations",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"configurations"
+							]
+						}
+					}
+				},
+				{
+					"name": "3.3 Получение конфигурации по Porsche Code (200 OK)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Fetched configuration matches saved Porsche Code', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data.porscheCode).to.equal(pm.collectionVariables.get('porscheCode'));",
+									"    pm.expect(jsonData.data.modelId).to.equal('macan');",
+									"    pm.expect(jsonData.data.interiorId).to.equal('leather_bordeaux');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/configurations/{{porscheCode}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"configurations",
+								"{{porscheCode}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "3.4 Список конфигураций текущего пользователя (200 OK)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('List contains user configuration', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"    const codes = jsonData.data.map(c => c.porscheCode);",
+									"    pm.expect(codes).to.include(pm.collectionVariables.get('porscheCode'));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/configurations?mine=true",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"configurations"
+							],
+							"query": [
+								{
+									"key": "mine",
+									"value": "true"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "3.5 Обновление конфигурации владельцем (200 OK)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Configuration updated successfully', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data.name).to.equal('Macan GTS Updated Custom Spec');",
+									"    pm.expect(jsonData.data.colorId).to.equal('c_chalk');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Macan GTS Updated Custom Spec\",\n    \"modelId\": \"macan\",\n    \"trimId\": \"macan_gts\",\n    \"colorId\": \"c_chalk\",\n    \"wheelId\": \"w_spyder\",\n    \"wheelFinishId\": \"wf_satin_black\",\n    \"caliperId\": \"cal_black\",\n    \"interiorId\": \"leather_racetex\",\n    \"seatId\": \"seats_18way\",\n    \"selectedOptions\": [\"opt_burmester\", \"opt_sport_chrono\", \"opt_matrix_led\"],\n    \"currency\": \"EUR\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/configurations/{{porscheCode}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"configurations",
+								"{{porscheCode}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "3.6 Разграничение прав: попытка изменения чужой конфигурации (403 Forbidden)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403 Forbidden', function () {",
+									"    pm.response.to.have.status(403);",
+									"});",
+									"",
+									"pm.test('Error indicates permission denied', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user2Token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Hacked Name\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/configurations/{{porscheCode}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"configurations",
+								"{{porscheCode}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "3.7 Попытка получить несуществующую конфигурацию (404 Not Found)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 404 Not Found', function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/configurations/NON-EXISTENT-CODE-999",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"configurations",
+								"NON-EXISTENT-CODE-999"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Заказы и Жизненный цикл (Orders & State Machine)",
+			"item": [
+				{
+					"name": "4.1 Оформление заказа на базе конфигурации (201 Created)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 201 Created', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Order number generated and state is pending', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data.orderNumber).to.be.a('string');",
+									"    pm.expect(jsonData.data.status).to.equal('pending');",
+									"    pm.collectionVariables.set('orderNumber', jsonData.data.orderNumber);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"porscheCode\": \"{{porscheCode}}\",\n    \"customerName\": \"Alexander Porsche\",\n    \"customerEmail\": \"alexander@porsche-enthusiast.com\",\n    \"customerPhone\": \"+49 711 911 0000\",\n    \"dealerCenter\": \"Porsche Centre Stuttgart-Zuffenhausen\",\n    \"deliveryOption\": \"factory_pickup\",\n    \"paymentMethod\": \"leasing\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					}
+				},
+				{
+					"name": "4.2 Список заказов пользователя (200 OK)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('List contains newly placed order', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    const orderNums = jsonData.data.map(o => o.orderNumber);",
+									"    pm.expect(orderNums).to.include(pm.collectionVariables.get('orderNumber'));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					}
+				},
+				{
+					"name": "4.3 Детали заказа по номеру (200 OK)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Order details match', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data.orderNumber).to.equal(pm.collectionVariables.get('orderNumber'));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/orders/{{orderNumber}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders",
+								"{{orderNumber}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "4.4 Переход состояния заказа: pending -> confirmed (200 OK)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Order status changed to confirmed', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data.status).to.equal('confirmed');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"confirmed\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders/{{orderNumber}}/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders",
+								"{{orderNumber}}",
+								"status"
+							]
+						}
+					}
+				},
+				{
+					"name": "4.5 Валидация перехода состояний: пропуск шага confirmed -> completed (422 Unprocessable)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 422 Unprocessable Entity', function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									"",
+									"pm.test('Error rejects illegal state transition', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"completed\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders/{{orderNumber}}/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders",
+								"{{orderNumber}}",
+								"status"
+							]
+						}
+					}
+				},
+				{
+					"name": "4.6 Удаление конфигурации владельцем (200 OK)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/configurations/{{porscheCode}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"configurations",
+								"{{porscheCode}}"
+							]
+						}
+					}
+				}
+			]
+		}
+	]
+}

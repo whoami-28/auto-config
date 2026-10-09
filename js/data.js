@@ -235,6 +235,139 @@ export const CONFIG_DATA = {
                     description: 'Экстремальный трековый снаряд с воздухозаборниками вместо задних форточек.'
                 }
             ]
+        },
+        {
+            id: 'macan',
+            name: 'Porsche Macan',
+            tagline: 'Life, intensified',
+            series: 'Compact Performance SUV',
+            basePrice: 62900,
+            image: 'assets/images/porsche_macan_front.jpg',
+            specs: {
+                power: '265 л.с.',
+                acceleration: '6.4 с',
+                topSpeed: '232 км/ч',
+                drivetrain: 'Полный привод (AWD)',
+                bodyType: 'Compact SUV'
+            },
+            trims: [
+                {
+                    id: 'macan_base',
+                    name: 'Macan',
+                    price: 62900,
+                    power: '265 л.с. (195 кВт)',
+                    acceleration: '6.4 с',
+                    topSpeed: '232 км/ч',
+                    engine: '2.0L 4-цилиндровый Turbo',
+                    transmission: '7-ступенчатая PDK',
+                    description: 'Городской спортивный SUV с острым рулевым управлением и комфортом премиум-класса.'
+                },
+                {
+                    id: 'macan_t',
+                    name: 'Macan T',
+                    price: 68500,
+                    power: '265 л.с. (195 кВт)',
+                    acceleration: '6.2 с',
+                    topSpeed: '232 км/ч',
+                    engine: '2.0L Turbo со спортивной калибровкой PASM',
+                    transmission: '7-ступенчатая PDK',
+                    description: 'Облегченная модификация Touring с заниженным на 15 мм шасси и пакетом Sport Chrono.'
+                },
+                {
+                    id: 'macan_s',
+                    name: 'Macan S',
+                    price: 74500,
+                    power: '380 л.с. (280 кВт)',
+                    acceleration: '4.8 с',
+                    topSpeed: '259 км/ч',
+                    engine: '2.9L V6 Twin-Turbo',
+                    transmission: '7-ступенчатая PDK',
+                    description: 'Мощный шестицилиндровый битурбо двигатель с фирменным звуком и мгновенным откликом.'
+                },
+                {
+                    id: 'macan_gts',
+                    name: 'Macan GTS',
+                    price: 89000,
+                    power: '440 л.с. (324 кВт)',
+                    acceleration: '4.3 с',
+                    topSpeed: '272 км/ч',
+                    engine: '2.9L V6 Twin-Turbo повышенного форсирования',
+                    transmission: '7-ступенчатая PDK',
+                    description: 'Флагман модельного ряда Macan со спортивной пневмоподвеской и тормозами с вольфрамовым покрытием PSCB.'
+                }
+            ]
+        },
+        {
+            id: 'cayenne',
+            name: 'Porsche Cayenne',
+            tagline: 'Together through every adventure',
+            series: 'Luxury Performance SUV',
+            basePrice: 80800,
+            image: 'assets/images/porsche_cayenne_front.jpg',
+            specs: {
+                power: '353 л.с.',
+                acceleration: '6.0 с',
+                topSpeed: '248 км/ч',
+                drivetrain: 'Полный привод (AWD)',
+                bodyType: 'Mid-size Luxury SUV'
+            },
+            trims: [
+                {
+                    id: 'cayenne_base',
+                    name: 'Cayenne',
+                    price: 80800,
+                    power: '353 л.с. (260 кВт)',
+                    acceleration: '6.0 с',
+                    topSpeed: '248 км/ч',
+                    engine: '3.0L V6 Turbo',
+                    transmission: '8-ступенчатая Tiptronic S',
+                    description: 'Эталон спортивного внедорожника: адаптивная пневмоподвеска и салон Porsche Driver Experience.'
+                },
+                {
+                    id: 'cayenne_e_hybrid',
+                    name: 'Cayenne E-Hybrid',
+                    price: 93300,
+                    power: '470 л.с. (346 кВт)',
+                    acceleration: '4.9 с',
+                    topSpeed: '254 км/ч',
+                    engine: '3.0L V6 Turbo + Электромотор (E-Hybrid)',
+                    transmission: '8-ступенчатая Tiptronic S',
+                    description: 'Экологичный и динамичный гибрид с увеличенным запасом хода на электротяге до 90 км.'
+                },
+                {
+                    id: 'cayenne_s',
+                    name: 'Cayenne S',
+                    price: 97300,
+                    power: '474 л.с. (349 кВт)',
+                    acceleration: '4.7 с',
+                    topSpeed: '273 км/ч',
+                    engine: '4.0L V8 Twin-Turbo',
+                    transmission: '8-ступенчатая Tiptronic S',
+                    description: 'Возвращение легендарного мотора V8 Biturbo с громогласным спортивным выхлопом.'
+                },
+                {
+                    id: 'cayenne_gts',
+                    name: 'Cayenne GTS',
+                    price: 126800,
+                    power: '500 л.с. (368 кВт)',
+                    acceleration: '4.4 с',
+                    topSpeed: '275 км/ч',
+                    engine: '4.0L V8 Twin-Turbo со спортивным шасси',
+                    transmission: '8-ступенчатая Tiptronic S',
+                    description: 'Бескомпромиссная спортивная настройка ходовой части, заниженный клиренс и пакет SportDesign.'
+                },
+                {
+                    id: 'cayenne_turbo_e_hybrid',
+                    name: 'Cayenne Turbo E-Hybrid',
+                    price: 157000,
+                    power: '739 л.с. (544 кВт)',
+                    acceleration: '3.7 с',
+                    topSpeed: '295 км/ч',
+                    engine: '4.0L V8 Twin-Turbo + Мощный электромотор (739 л.с. суммарно)',
+                    transmission: '8-ступенчатая Tiptronic S',
+                    description: 'Самый мощный Cayenne за всю историю бренда с невероятным крутящим моментом 950 Нм.'
+                }
+            ]
         }
     ],
 

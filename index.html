@@ -56,6 +56,14 @@
                 <span>Импорт</span>
             </button>
 
+            <!-- User Auth & Saved Configurations -->
+            <div class="user-auth-wrapper" id="user-auth-wrapper">
+                <button class="header-icon-btn" id="btn-user-auth" title="Вход в систему">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span id="user-auth-label">Войти</span>
+                </button>
+            </div>
+
             <!-- Sticky Header Price Tag -->
             <div class="header-live-price">
                 <span class="hlp-label">Total MSRP:</span>
@@ -190,6 +198,71 @@
                 <div class="share-status-bar" id="share-modal-status">
                     <!-- Dynamic server / local status -->
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Authentication (Login / Register) -->
+    <div class="modal-overlay" id="auth-modal">
+        <div class="modal-card auth-dialog">
+            <div class="modal-header">
+                <div class="auth-tabs">
+                    <button class="auth-tab-btn active" id="tab-login-btn">Вход</button>
+                    <button class="auth-tab-btn" id="tab-register-btn">Регистрация</button>
+                </div>
+                <button class="modal-close-btn" id="auth-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Login Form -->
+                <form id="auth-login-form" class="auth-form">
+                    <div class="auth-field">
+                        <label for="login-identifier">Имя пользователя или Email</label>
+                        <input type="text" id="login-identifier" class="auth-input" placeholder="demo" required autocomplete="username">
+                    </div>
+                    <div class="auth-field">
+                        <label for="login-password">Пароль</label>
+                        <input type="password" id="login-password" class="auth-input" placeholder="porsche123" required autocomplete="current-password">
+                    </div>
+                    <div class="auth-error-msg" id="login-error-msg"></div>
+                    <button type="submit" class="modal-action-btn btn-accept auth-submit-btn">Войти</button>
+                    <button type="button" class="auth-demo-btn" id="btn-quick-demo">Войти как demo (тест)</button>
+                </form>
+
+                <!-- Register Form -->
+                <form id="auth-register-form" class="auth-form hidden">
+                    <div class="auth-field">
+                        <label for="register-username">Имя пользователя</label>
+                        <input type="text" id="register-username" class="auth-input" placeholder="driver911" required autocomplete="username">
+                    </div>
+                    <div class="auth-field">
+                        <label for="register-email">Email</label>
+                        <input type="email" id="register-email" class="auth-input" placeholder="driver@porsche.de" required autocomplete="email">
+                    </div>
+                    <div class="auth-field">
+                        <label for="register-password">Пароль</label>
+                        <input type="password" id="register-password" class="auth-input" placeholder="Минимум 6 символов" required minlength="6" autocomplete="new-password">
+                    </div>
+                    <div class="auth-error-msg" id="register-error-msg"></div>
+                    <button type="submit" class="modal-action-btn btn-accept auth-submit-btn">Зарегистрироваться</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: User Saved Configurations -->
+    <div class="modal-overlay" id="user-configs-modal">
+        <div class="modal-card user-configs-dialog">
+            <div class="modal-header">
+                <h3 class="modal-title">Мои конфигурации Porsche</h3>
+                <button class="modal-close-btn" id="user-configs-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="user-configs-status" id="user-configs-status">Загрузка...</div>
+                <div class="user-configs-list" id="user-configs-list"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-action-btn btn-cancel" id="btn-user-configs-logout">Выйти из аккаунта</button>
+                <button class="modal-action-btn btn-accept" id="btn-user-configs-close-action">Закрыть</button>
             </div>
         </div>
     </div>

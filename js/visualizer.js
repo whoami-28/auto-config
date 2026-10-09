@@ -30,8 +30,17 @@ export class VehicleVisualizer {
             return 'assets/images/porsche_night_lights.jpg';
         }
 
-        // Interior cockpit view
+        // Interior cockpit view - dynamic resolution based on selected leather trim
         if (state.viewAngle === 'interior_cockpit') {
+            if (state.interiorId === 'int_leather_bordeaux' || state.interiorId === 'leather_bordeaux') {
+                return 'assets/images/porsche_interior_bordeaux.jpg';
+            }
+            if (state.interiorId === 'int_racetex_sport' || state.interiorId === 'int_racetex_gt' || state.interiorId === 'leather_racetex') {
+                return 'assets/images/porsche_interior_racetex.jpg';
+            }
+            if (state.interiorId === 'int_club_truffle' || state.interiorId === 'leather_truffle') {
+                return 'assets/images/porsche_interior_truffle.jpg';
+            }
             return 'assets/images/porsche_interior_cockpit.jpg';
         }
 
@@ -46,6 +55,12 @@ export class VehicleVisualizer {
         }
 
         // Exterior 3/4 Front - depends on selected Model and Color!
+        if (state.modelId === 'macan') {
+            return 'assets/images/porsche_macan_front.jpg';
+        }
+        if (state.modelId === 'cayenne') {
+            return 'assets/images/porsche_cayenne_front.jpg';
+        }
         if (state.modelId === 'taycan') {
             return 'assets/images/porsche_taycan_front.jpg';
         }

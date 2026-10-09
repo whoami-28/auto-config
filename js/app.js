@@ -42,6 +42,9 @@ export class App {
         });
 
         // Initialize UI navigation and events
+        this.currentUser = null;
+        this.authToken = localStorage.getItem('porsche_auth_token') || null;
+        this.initAuth();
         this.renderStepNavigation();
         this.bindGlobalEvents();
         this.renderCurrentStep();
@@ -72,7 +75,14 @@ export class App {
         this.currentStep = stepIdx;
         this.renderStepNavigation();
         this.renderCurrentStep();
-        
+
+        // Auto-switch visualizer angle for Interior step
+        if (this.steps[stepIdx].id === 'interior') {
+            this.engine.setViewAngle('interior_cockpit');
+        } else if (this.steps[stepIdx].id !== 'interior' && this.engine.getState().viewAngle === 'interior_cockpit') {
+            this.engine.setViewAngle('front_three_quarter');
+        }
+
         // Scroll options pane to top smoothly
         const pane = document.getElementById('config-panel-content');
         if (pane) pane.scrollTo({ top: 0, behavior: 'smooth' });
@@ -630,7 +640,12 @@ export class App {
         container.querySelectorAll('.interior-card').forEach(el => {
             el.addEventListener('click', (e) => {
                 const intId = e.currentTarget.dataset.interiorId;
-                if (intId) this.engine.setInterior(intId);
+                if (intId) {
+                    this.engine.setInterior(intId);
+                    if (this.engine.getState().viewAngle !== 'interior_cockpit') {
+                        this.engine.setViewAngle('interior_cockpit');
+                    }
+                }
             });
         });
 
@@ -1087,19 +1102,31 @@ export class App {
      * Share & Server Persistence
      */
     async saveConfigurationToServer() {
+        const headers = { 'Content-Type': 'application/json' };
+        if (this.authToken) {
+            headers['Authorization'] = `Bearer ${this.authToken}`;
+        }
+
+        const model = this.engine.getCurrentModel();
+        const trim = this.engine.getCurrentTrim();
+
         try {
-            const response = await fetch('/api/config/save', {
+            const response = await fetch('/api/configurations', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(this.engine.getState())
+                headers,
+                body: JSON.stringify({
+                    title: `${model.name} ${trim.name}`,
+                    config: this.engine.getState()
+                })
             });
             if (response.ok) {
                 const data = await response.json();
-                if (data.success) {
+                const code = data.porscheCode || (data.data && data.data.porscheCode);
+                if (code) {
                     return {
                         isServer: true,
-                        porscheCode: data.porscheCode,
-                        url: `${window.location.origin}${window.location.pathname}#code=${data.porscheCode}`
+                        porscheCode: code,
+                        url: `${window.location.origin}${window.location.pathname}#code=${code}`
                     };
                 }
             }
@@ -1138,7 +1165,8 @@ export class App {
 
         if (statusEl) {
             if (result.isServer) {
-                statusEl.innerHTML = '<span style="color:#ffffff;">●</span> Сохранено на сервере Node.js';
+                const userNotice = this.currentUser ? ` (Аккаунт: ${this.currentUser.username})` : '';
+                statusEl.innerHTML = `<span style="color:#ffffff;">●</span> Сохранено в базе данных SQLite${userNotice}`;
             } else {
                 statusEl.innerHTML = '<span style="color:#71717a;">●</span> Локальный код сборки (GitHub Pages)';
             }
@@ -1166,7 +1194,7 @@ export class App {
         if (!code) return;
 
         try {
-            const response = await fetch(`/api/config/${encodeURIComponent(code)}`);
+            const response = await fetch(`/api/configurations/${encodeURIComponent(code)}`);
             if (response.ok) {
                 const data = await response.json();
                 if (data.success && data.data && data.data.config) {
@@ -1178,6 +1206,317 @@ export class App {
         } catch (err) {
             // Server offline
         }
+    }
+
+    /**
+     * User Authentication & Saved Configs Manager
+     */
+    async initAuth() {
+        const authBtn = document.getElementById('btn-user-auth');
+        const authModal = document.getElementById('auth-modal');
+        const authModalClose = document.getElementById('auth-modal-close');
+        const tabLoginBtn = document.getElementById('tab-login-btn');
+        const tabRegisterBtn = document.getElementById('tab-register-btn');
+        const loginForm = document.getElementById('auth-login-form');
+        const registerForm = document.getElementById('auth-register-form');
+        const btnQuickDemo = document.getElementById('btn-quick-demo');
+
+        const configsModal = document.getElementById('user-configs-modal');
+        const configsModalClose = document.getElementById('user-configs-close');
+        const btnConfigsCloseAction = document.getElementById('btn-user-configs-close-action');
+        const btnConfigsLogout = document.getElementById('btn-user-configs-logout');
+
+        // Check active session
+        if (this.authToken) {
+            try {
+                const res = await fetch('/api/auth/me', {
+                    headers: { 'Authorization': `Bearer ${this.authToken}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success && data.data) {
+                        this.currentUser = data.data;
+                        this.updateAuthUI();
+                    } else {
+                        this.clearAuth();
+                    }
+                } else {
+                    this.clearAuth();
+                }
+            } catch (err) {
+                const cachedUser = localStorage.getItem('porsche_user');
+                if (cachedUser) {
+                    try { this.currentUser = JSON.parse(cachedUser); } catch(e){}
+                    this.updateAuthUI();
+                }
+            }
+        }
+
+        if (authBtn) {
+            authBtn.addEventListener('click', () => {
+                if (this.currentUser) {
+                    this.openUserConfigsModal();
+                } else {
+                    this.openAuthModal('login');
+                }
+            });
+        }
+
+        if (authModalClose) {
+            authModalClose.addEventListener('click', () => {
+                if (authModal) authModal.classList.remove('visible');
+            });
+        }
+
+        if (tabLoginBtn && tabRegisterBtn) {
+            tabLoginBtn.addEventListener('click', () => {
+                tabLoginBtn.classList.add('active');
+                tabRegisterBtn.classList.remove('active');
+                loginForm?.classList.remove('hidden');
+                registerForm?.classList.add('hidden');
+            });
+            tabRegisterBtn.addEventListener('click', () => {
+                tabRegisterBtn.classList.add('active');
+                tabLoginBtn.classList.remove('active');
+                registerForm?.classList.remove('hidden');
+                loginForm?.classList.add('hidden');
+            });
+        }
+
+        if (btnQuickDemo) {
+            btnQuickDemo.addEventListener('click', () => {
+                const logInput = document.getElementById('login-identifier');
+                const passInput = document.getElementById('login-password');
+                if (logInput) logInput.value = 'demo';
+                if (passInput) passInput.value = 'porsche123';
+                if (loginForm) loginForm.dispatchEvent(new Event('submit'));
+            });
+        }
+
+        if (loginForm) {
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const loginVal = document.getElementById('login-identifier')?.value.trim();
+                const passVal = document.getElementById('login-password')?.value;
+                const errEl = document.getElementById('login-error-msg');
+                if (errEl) errEl.classList.remove('visible');
+
+                try {
+                    const res = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ login: loginVal, password: passVal })
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.success) {
+                        this.setAuth(data.data.token, data.data.user);
+                        if (authModal) authModal.classList.remove('visible');
+                        this.showToast(`Добро пожаловать, ${data.data.user.username}`);
+                    } else {
+                        if (errEl) {
+                            errEl.textContent = (data.error && data.error.message) || data.error || 'Неверный логин или пароль';
+                            errEl.classList.add('visible');
+                        }
+                    }
+                } catch (err) {
+                    if (errEl) {
+                        errEl.textContent = 'Сервер недоступен';
+                        errEl.classList.add('visible');
+                    }
+                }
+            });
+        }
+
+        if (registerForm) {
+            registerForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const userVal = document.getElementById('register-username')?.value.trim();
+                const emailVal = document.getElementById('register-email')?.value.trim();
+                const passVal = document.getElementById('register-password')?.value;
+                const errEl = document.getElementById('register-error-msg');
+                if (errEl) errEl.classList.remove('visible');
+
+                try {
+                    const res = await fetch('/api/auth/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username: userVal, email: emailVal, password: passVal })
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.success) {
+                        this.setAuth(data.data.token, data.data.user);
+                        if (authModal) authModal.classList.remove('visible');
+                        this.showToast(`Аккаунт ${data.data.user.username} успешно создан`);
+                    } else {
+                        if (errEl) {
+                            errEl.textContent = (data.error && data.error.message) || data.error || 'Ошибка регистрации';
+                            errEl.classList.add('visible');
+                        }
+                    }
+                } catch (err) {
+                    if (errEl) {
+                        errEl.textContent = 'Сервер недоступен';
+                        errEl.classList.add('visible');
+                    }
+                }
+            });
+        }
+
+        if (configsModalClose) configsModalClose.onclick = () => configsModal?.classList.remove('visible');
+        if (btnConfigsCloseAction) btnConfigsCloseAction.onclick = () => configsModal?.classList.remove('visible');
+        if (btnConfigsLogout) {
+            btnConfigsLogout.onclick = () => {
+                this.clearAuth();
+                configsModal?.classList.remove('visible');
+                this.showToast('Вы вышли из учетной записи');
+            };
+        }
+    }
+
+    setAuth(token, user) {
+        this.authToken = token;
+        this.currentUser = user;
+        localStorage.setItem('porsche_auth_token', token);
+        localStorage.setItem('porsche_user', JSON.stringify(user));
+        this.updateAuthUI();
+    }
+
+    clearAuth() {
+        this.authToken = null;
+        this.currentUser = null;
+        localStorage.removeItem('porsche_auth_token');
+        localStorage.removeItem('porsche_user');
+        this.updateAuthUI();
+    }
+
+    updateAuthUI() {
+        const labelEl = document.getElementById('user-auth-label');
+        if (labelEl) {
+            labelEl.textContent = this.currentUser ? this.currentUser.username : 'Войти';
+        }
+    }
+
+    openAuthModal(mode = 'login') {
+        const modal = document.getElementById('auth-modal');
+        if (!modal) return;
+        const tabLoginBtn = document.getElementById('tab-login-btn');
+        const tabRegisterBtn = document.getElementById('tab-register-btn');
+        const loginForm = document.getElementById('auth-login-form');
+        const registerForm = document.getElementById('auth-register-form');
+
+        if (mode === 'login') {
+            tabLoginBtn?.classList.add('active');
+            tabRegisterBtn?.classList.remove('active');
+            loginForm?.classList.remove('hidden');
+            registerForm?.classList.add('hidden');
+        } else {
+            tabRegisterBtn?.classList.add('active');
+            tabLoginBtn?.classList.remove('active');
+            registerForm?.classList.remove('hidden');
+            loginForm?.classList.add('hidden');
+        }
+
+        document.getElementById('login-error-msg')?.classList.remove('visible');
+        document.getElementById('register-error-msg')?.classList.remove('visible');
+        modal.classList.add('visible');
+    }
+
+    async openUserConfigsModal() {
+        const modal = document.getElementById('user-configs-modal');
+        if (!modal) return;
+        modal.classList.add('visible');
+
+        const statusEl = document.getElementById('user-configs-status');
+        const listEl = document.getElementById('user-configs-list');
+        if (listEl) listEl.innerHTML = '';
+        if (statusEl) {
+            statusEl.textContent = 'Загрузка ваших сохраненных сборок...';
+            statusEl.style.display = 'block';
+        }
+
+        try {
+            const res = await fetch('/api/configurations?mine=true', {
+                headers: { 'Authorization': `Bearer ${this.authToken}` }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+                    if (statusEl) statusEl.style.display = 'none';
+                    if (listEl) {
+                        listEl.innerHTML = data.data.map(cfg => {
+                            const dateStr = cfg.createdAt ? new Date(cfg.createdAt).toLocaleDateString('ru-RU') : '';
+                            const priceStr = cfg.pricing ? cfg.pricing.totalPriceFormatted : `${cfg.totalPrice || 0} USD`;
+                            return `
+                                <div class="user-config-card" data-code="${cfg.porscheCode}">
+                                    <div class="ucc-info">
+                                        <span class="ucc-title">${cfg.title || 'Porsche'}</span>
+                                        <div class="ucc-meta">
+                                            <span class="ucc-code">${cfg.porscheCode}</span>
+                                            <span>•</span>
+                                            <span>${dateStr}</span>
+                                        </div>
+                                        <div class="ucc-price">${priceStr}</div>
+                                    </div>
+                                    <div class="ucc-actions">
+                                        <button class="ucc-btn ucc-btn-load" data-action="load" data-code="${cfg.porscheCode}">Загрузить</button>
+                                        <button class="ucc-btn ucc-btn-delete" data-action="delete" data-code="${cfg.porscheCode}">Удалить</button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+
+                        listEl.querySelectorAll('.ucc-btn-load').forEach(btn => {
+                            btn.onclick = async (e) => {
+                                const code = e.currentTarget.dataset.code;
+                                await this.loadConfigByCode(code);
+                                modal.classList.remove('visible');
+                            };
+                        });
+
+                        listEl.querySelectorAll('.ucc-btn-delete').forEach(btn => {
+                            btn.onclick = async (e) => {
+                                const code = e.currentTarget.dataset.code;
+                                if (confirm(`Удалить конфигурацию ${code}?`)) {
+                                    await this.deleteConfigByCode(code);
+                                    this.openUserConfigsModal();
+                                }
+                            };
+                        });
+                    }
+                    return;
+                }
+            }
+            if (statusEl) statusEl.textContent = 'У вас пока нет сохраненных конфигураций на сервере.';
+        } catch (err) {
+            if (statusEl) statusEl.textContent = 'Ошибка загрузки сохраненных конфигураций.';
+        }
+    }
+
+    async loadConfigByCode(code) {
+        try {
+            const res = await fetch(`/api/configurations/${encodeURIComponent(code)}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.success && data.data && data.data.config) {
+                    this.engine.importState(data.data.config);
+                    this.showToast(`Конфигурация ${code} успешно загружена`);
+                    return;
+                }
+            }
+        } catch(e){}
+        this.showToast(`Не удалось загрузить конфигурацию ${code}`);
+    }
+
+    async deleteConfigByCode(code) {
+        try {
+            const res = await fetch(`/api/configurations/${encodeURIComponent(code)}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${this.authToken}` }
+            });
+            if (res.ok) {
+                this.showToast(`Конфигурация ${code} удалена`);
+            }
+        } catch(e){}
     }
 
     downloadJSON() {

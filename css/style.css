@@ -2113,3 +2113,221 @@ button {
         text-align: left;
     }
 }
+
+/* ==========================================================================
+   MINIMALIST AUTH & SAVED CONFIGURATIONS MODALS
+   ========================================================================== */
+.user-auth-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.auth-dialog {
+    max-width: 440px;
+}
+
+.auth-tabs {
+    display: flex;
+    gap: 8px;
+}
+
+.auth-tab-btn {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.auth-tab-btn:hover {
+    color: var(--text-primary);
+}
+
+.auth-tab-btn.active {
+    color: #ffffff;
+    background: var(--bg-surface-elevated);
+    border: 1px solid var(--border-color);
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.auth-form.hidden {
+    display: none;
+}
+
+.auth-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.auth-field label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+}
+
+.auth-input {
+    background: #141416;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    padding: 10px 14px;
+    font-size: 13px;
+    font-family: inherit;
+    transition: border-color var(--transition-fast);
+}
+
+.auth-input:focus {
+    outline: none;
+    border-color: #a1a1aa;
+}
+
+.auth-error-msg {
+    color: #f87171;
+    font-size: 12px;
+    min-height: 16px;
+    display: none;
+}
+
+.auth-error-msg.visible {
+    display: block;
+}
+
+.auth-submit-btn {
+    width: 100%;
+    margin-top: 6px;
+    padding: 12px;
+    font-size: 12px;
+    text-align: center;
+}
+
+.auth-demo-btn {
+    background: transparent;
+    border: 1px dashed var(--border-color);
+    color: var(--text-muted);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-size: 11.5px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.auth-demo-btn:hover {
+    color: var(--text-secondary);
+    border-color: var(--border-color-hover);
+}
+
+/* User Configs Modal Dialog */
+.user-configs-dialog {
+    max-width: 600px;
+}
+
+.user-configs-status {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 12px 0;
+}
+
+.user-configs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.user-config-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: border-color var(--transition-fast);
+}
+
+.user-config-card:hover {
+    border-color: var(--border-color-hover);
+}
+
+.ucc-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.ucc-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.ucc-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.ucc-code {
+    font-family: var(--font-heading);
+    letter-spacing: 0.5px;
+    color: #ffffff;
+}
+
+.ucc-price {
+    font-family: var(--font-heading);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-top: 4px;
+}
+
+.ucc-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.ucc-btn {
+    padding: 7px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.ucc-btn-load {
+    background: #ffffff;
+    color: #09090b;
+    border: 1px solid #ffffff;
+}
+
+.ucc-btn-load:hover {
+    background: #e4e4e7;
+}
+
+.ucc-btn-delete {
+    background: var(--bg-surface-elevated);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+}
+
+.ucc-btn-delete:hover {
+    color: #f87171;
+    border-color: #f87171;
+}
