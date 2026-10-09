@@ -105,8 +105,8 @@ router.post('/register', (req, res) => {
  * Authenticates user credentials and returns JWT.
  */
 router.post('/login', (req, res) => {
-    const { identifier, username, email, password } = req.body;
-    const loginUser = identifier || username || email;
+    const { identifier, username, email, login, password } = req.body;
+    const loginUser = identifier || username || email || login;
 
     if (!loginUser || !password) {
         return res.status(400).json({

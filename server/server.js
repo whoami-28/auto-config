@@ -28,21 +28,30 @@ const PORT = CONFIG.PORT;
 app.use(cors());
 app.use(express.json());
 
-// API Routes
+// API Routes (mounted on /api and root aliases for Postman & client tolerance)
 app.use('/api/auth', authRouter);
+app.use('/auth', authRouter);
+
 app.use('/api/catalog', catalogRouter);
+app.use('/catalog', catalogRouter);
+
 app.use('/api/configurations', configurationsRouter);
+app.use('/configurations', configurationsRouter);
+
 app.use('/api/orders', ordersRouter);
+app.use('/orders', ordersRouter);
 
 // System Health endpoint
-app.get('/api/health', (req, res) => {
+const healthHandler = (req, res) => {
     res.json({
         success: true,
         status: 'ok',
         uptime: Math.round(process.uptime()),
         timestamp: new Date().toISOString()
     });
-});
+};
+app.get('/api/health', healthHandler);
+app.get('/health', healthHandler);
 
 // Backward-compatibility aliases for legacy client endpoints
 app.post('/api/config/save', (req, res, next) => {
@@ -65,15 +74,36 @@ app.get('/api/configs', (req, res, next) => {
     configurationsRouter(req, res, next);
 });
 
+// JSON 404 for unmatched API requests (prevents returning HTML for API calls)
+app.use(['/api', '/auth', '/catalog', '/configurations', '/orders'], (req, res) => {
+    res.status(404).json({
+        success: false,
+        error: {
+            code: 'NOT_FOUND',
+            message: `API эндпоинт ${req.method} ${req.originalUrl} не найден`
+        }
+    });
+});
+
 // Static Assets Serving
 app.use(express.static(rootDir));
 
 // Centralized Error Handler
 app.use(errorHandler);
 
-// SPA Fallback
+// SPA Fallback: GET browser navigation returns index.html, non-GET returns JSON 404
 app.use((req, res) => {
-    res.sendFile(path.join(rootDir, 'index.html'));
+    if (req.method === 'GET') {
+        res.sendFile(path.join(rootDir, 'index.html'));
+    } else {
+        res.status(404).json({
+            success: false,
+            error: {
+                code: 'NOT_FOUND',
+                message: `Эндпоинт ${req.method} ${req.originalUrl} не найден`
+            }
+        });
+    }
 });
 
 // Start Server if run directly
