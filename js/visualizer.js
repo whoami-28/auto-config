@@ -35,10 +35,10 @@ export class VehicleVisualizer {
         this.container.innerHTML = `
             <div class="visualizer-wrapper scene-day" id="visualizer-wrapper">
                 <!-- 3D WebGL Stage -->
-                <div class="visualizer-stage-3d" id="visualizer-3d-stage"></div>
+                <div class="visualizer-stage-3d" id="visualizer-3d-stage" style="opacity: 0; transition: opacity 0.4s ease;"></div>
 
-                <!-- 2D High-Resolution Photo Stage -->
-                <div class="visualizer-stage-photo" id="visualizer-photo-stage" style="display: none;">
+                <!-- 2D High-Resolution Photo Stage (visible while 3D loads & for interior) -->
+                <div class="visualizer-stage-photo" id="visualizer-photo-stage" style="display: flex;">
                     <img src="assets/images/porsche_front_red.jpg" 
                          alt="Porsche Studio View" 
                          class="visualizer-hero-image"
@@ -356,9 +356,11 @@ export class VehicleVisualizer {
 
         // Case B: Exterior in 3D Mode
         if (this.is3DMode && this.threeVisualizer && this.hasWebGLSupport) {
-            if (stagePhoto) stagePhoto.style.display = 'none';
-            if (stage3D) stage3D.style.display = 'block';
-            if (hint3D) hint3D.style.display = 'flex';
+            // Update 2D photo in background as instant fallback
+            const photoSrc = this.resolveCurrentImage(state, model, color);
+            if (heroImg && heroImg.src !== photoSrc) {
+                heroImg.src = photoSrc;
+            }
 
             try {
                 // Ensure correct model is loaded in 3D
@@ -366,6 +368,14 @@ export class VehicleVisualizer {
                     await this.threeVisualizer.loadModel(state.modelId);
                     this.currentLoadedModelId = state.modelId;
                 }
+
+                // 3D model is ready! Smoothly show 3D and hide 2D photo
+                if (stage3D) {
+                    stage3D.style.display = 'block';
+                    stage3D.style.opacity = '1';
+                }
+                if (stagePhoto) stagePhoto.style.display = 'none';
+                if (hint3D) hint3D.style.display = 'flex';
 
                 // Smoothly update camera angle if angle changed
                 this.threeVisualizer.setCameraAngle(state.viewAngle, true);
@@ -378,12 +388,18 @@ export class VehicleVisualizer {
             } catch (err) {
                 console.warn('[Visualizer] 3D render issue, falling back to 2D photo:', err);
                 this.is3DMode = false;
+                if (stage3D) {
+                    stage3D.style.display = 'none';
+                    stage3D.style.opacity = '0';
+                }
+                if (stagePhoto) stagePhoto.style.display = 'flex';
+                if (hint3D) hint3D.style.display = 'none';
+
                 const toggleBtn = this.container.querySelector('#btn-toggle-3d');
                 if (toggleBtn) {
                     toggleBtn.classList.remove('active');
                     toggleBtn.querySelector('.mode-text').textContent = '2D Фото';
                 }
-                this.syncWithState(state, 'fallbackTo2D');
             }
             return;
         }

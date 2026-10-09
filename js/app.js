@@ -31,7 +31,11 @@ export class App {
         // Initialize Visualizer
         const visualizerContainer = document.getElementById('visualizer-container');
         if (visualizerContainer) {
-            this.visualizer = new VehicleVisualizer(visualizerContainer, this.engine);
+            try {
+                this.visualizer = new VehicleVisualizer(visualizerContainer, this.engine);
+            } catch (err) {
+                console.error('[App] Visualizer initialization error:', err);
+            }
         }
 
         // Subscribe to engine changes
@@ -2235,7 +2239,11 @@ export class App {
     }
 }
 
-// Instantiate and start app on DOM ready
-document.addEventListener('DOMContentLoaded', () => {
+// Robust startup: checks if DOM is already ready or still loading
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        window.porscheApp = new App();
+    });
+} else {
     window.porscheApp = new App();
-});
+}

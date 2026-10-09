@@ -5,9 +5,9 @@
  * brake caliper customization, and dynamic day/night showroom lighting.
  */
 
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import * as THREE from './vendor/three/three.module.js';
+import { OrbitControls } from './vendor/three/controls/OrbitControls.js';
+import { GLTFLoader } from './vendor/three/loaders/GLTFLoader.js';
 
 // Configuration map for all 6 Porsche models in the catalog
 export const MODEL_SPECS = {

@@ -10,6 +10,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" type="image/png" href="assets/images/porsche_crest_white.png">
+
+    <!-- Three.js ES Module Import Map (must be inside <head> before any modules) -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "./js/vendor/three/three.module.js",
+            "three/addons/": "./js/vendor/three/"
+        }
+    }
+    </script>
 </head>
 <body>
     <!-- Top Global Header -->
@@ -348,21 +358,7 @@
     <!-- Notification Toast -->
     <div class="app-toast" id="app-toast"></div>
 
-    <!-- Three.js ES Module Import Map -->
-    <script type="importmap">
-    {
-        "imports": {
-            "three": "./js/vendor/three/three.module.js",
-            "three/addons/": "./js/vendor/three/"
-        }
-    }
-    </script>
-
-    <!-- Main JavaScript Modules -->
-    <script type="module" src="js/data.js"></script>
-    <script type="module" src="js/engine.js"></script>
-    <script type="module" src="js/three_visualizer.js"></script>
-    <script type="module" src="js/visualizer.js"></script>
+    <!-- Main Application Entry Script -->
     <script type="module" src="js/app.js"></script>
 </body>
 </html>

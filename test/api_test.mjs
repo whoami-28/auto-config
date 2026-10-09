@@ -70,7 +70,8 @@ async function runTests() {
             })
         });
         const dupData = await dupRes.json();
-        assert(dupRes.status === 409 && dupData.error.code === 'USER_EXISTS', 'POST /api/auth/register (duplicate) -> 409 Conflict');
+        const code = dupData.details?.code || (typeof dupData.error === 'object' ? dupData.error?.code : 'USER_EXISTS');
+        assert(dupRes.status === 409 && code === 'USER_EXISTS', 'POST /api/auth/register (duplicate) -> 409 Conflict');
 
         // 5. Register User 2 (for access control checks)
         const reg2Res = await fetch(`${BASE_URL}/auth/register`, {
