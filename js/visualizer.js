@@ -25,8 +25,8 @@ export class VehicleVisualizer {
     resolveCurrentImage(state, model, color) {
         const isNight = state.lighting === 'night';
 
-        // Night mode with headlights
-        if (isNight && state.viewAngle !== 'interior_cockpit') {
+        // Night mode for 911 front angle
+        if (isNight && state.viewAngle === 'exterior_34_front' && state.modelId === '911') {
             return 'assets/images/porsche_night_lights.jpg';
         }
 
@@ -44,13 +44,21 @@ export class VehicleVisualizer {
             return 'assets/images/porsche_interior_cockpit.jpg';
         }
 
-        // Exterior side profile
+        // Exterior side profile - model-specific studio photos
         if (state.viewAngle === 'exterior_side') {
+            if (state.modelId === 'macan') return 'assets/images/porsche_macan_side.jpg';
+            if (state.modelId === 'cayenne') return 'assets/images/porsche_cayenne_side.jpg';
+            if (state.modelId === 'taycan') return 'assets/images/porsche_taycan_side.jpg';
+            if (state.modelId === 'panamera') return 'assets/images/porsche_panamera_side.jpg';
             return 'assets/images/porsche_side_profile.jpg';
         }
 
-        // Exterior rear 3/4 view
+        // Exterior rear 3/4 view - model-specific studio photos
         if (state.viewAngle === 'exterior_34_rear') {
+            if (state.modelId === 'macan') return 'assets/images/porsche_macan_rear.jpg';
+            if (state.modelId === 'cayenne') return 'assets/images/porsche_cayenne_rear.jpg';
+            if (state.modelId === 'taycan') return 'assets/images/porsche_taycan_rear.jpg';
+            if (state.modelId === 'panamera') return 'assets/images/porsche_panamera_rear.jpg';
             return 'assets/images/porsche_rear_view.jpg';
         }
 

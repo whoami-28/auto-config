@@ -249,20 +249,101 @@
         </div>
     </div>
 
-    <!-- MODAL: User Saved Configurations -->
+    <!-- MODAL: User Account & Saved Items -->
     <div class="modal-overlay" id="user-configs-modal">
         <div class="modal-card user-configs-dialog">
             <div class="modal-header">
-                <h3 class="modal-title">Мои конфигурации Porsche</h3>
+                <div class="auth-tabs">
+                    <button class="auth-tab-btn active" id="tab-user-configs-btn">Конфигурации</button>
+                    <button class="auth-tab-btn" id="tab-user-orders-btn">Мои заказы</button>
+                </div>
                 <button class="modal-close-btn" id="user-configs-close">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="user-configs-status" id="user-configs-status">Загрузка...</div>
                 <div class="user-configs-list" id="user-configs-list"></div>
+                <div class="user-orders-list hidden" id="user-orders-list"></div>
             </div>
             <div class="modal-footer">
                 <button class="modal-action-btn btn-cancel" id="btn-user-configs-logout">Выйти из аккаунта</button>
                 <button class="modal-action-btn btn-accept" id="btn-user-configs-close-action">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Place Official Porsche Order -->
+    <div class="modal-overlay" id="order-modal">
+        <div class="modal-card order-dialog">
+            <div class="modal-header">
+                <h3 class="modal-title">Оформление официального заказа Porsche</h3>
+                <button class="modal-close-btn" id="order-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="order-form-container">
+                    <div class="order-vehicle-card">
+                        <div class="ovc-header">
+                            <div>
+                                <span class="ovc-badge-label">Выбранный автомобиль</span>
+                                <h4 class="ovc-car-title" id="order-modal-car-name">Porsche 911 Carrera GTS</h4>
+                            </div>
+                            <span class="ovc-code" id="order-modal-code">PR-911-GTS-000000</span>
+                        </div>
+                        <div class="ovc-price-row">
+                            <span class="ovc-price-label">Итоговая стоимость (Total MSRP):</span>
+                            <span class="ovc-price-value" id="order-modal-price">0 ₽</span>
+                        </div>
+                    </div>
+
+                    <form id="order-placement-form" class="auth-form">
+                        <div class="auth-field">
+                            <label for="order-dealer-center">Официальный дилерский центр</label>
+                            <select id="order-dealer-center" class="auth-input" required>
+                                <option value="Порше Центр Москва (Ленинградский пр-т)">Порше Центр Москва (Ленинградский пр-т)</option>
+                                <option value="Порше Центр Рублевский (Москва)">Порше Центр Рублевский (Москва)</option>
+                                <option value="Порше Центр Пулково (Санкт-Петербург)">Порше Центр Пулково (Санкт-Петербург)</option>
+                                <option value="Порше Центр Екатеринбург">Порше Центр Екатеринбург</option>
+                                <option value="Porsche Centre Stuttgart-Zuffenhausen (Заводской центр)">Porsche Centre Stuttgart-Zuffenhausen (Заводской центр)</option>
+                            </select>
+                        </div>
+
+                        <div class="auth-field">
+                            <label for="order-customer-name">Имя и фамилия заказчика</label>
+                            <input type="text" id="order-customer-name" class="auth-input" placeholder="Александр Порше" required>
+                        </div>
+
+                        <div class="auth-field">
+                            <label for="order-customer-phone">Контактный телефон</label>
+                            <input type="tel" id="order-customer-phone" class="auth-input" placeholder="+7 (999) 911-00-00" required>
+                        </div>
+
+                        <div class="auth-field">
+                            <label for="order-delivery-option">Программа передачи автомобиля</label>
+                            <select id="order-delivery-option" class="auth-input">
+                                <option value="dealer_presentation">Выдача в дилерском центре с персональной презентацией</option>
+                                <option value="factory_delivery">Заводская программа выдачи (Factory Delivery Цуффенхаузен)</option>
+                                <option value="enclosed_transport">Индивидуальная закрытая доставка автовозом Porsche</option>
+                            </select>
+                        </div>
+
+                        <div class="auth-error-msg" id="order-error-msg"></div>
+
+                        <button type="submit" class="modal-action-btn btn-accept auth-submit-btn" id="btn-submit-order">
+                            Подтвердить и направить заказ
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Order Success State -->
+                <div class="order-success-box hidden" id="order-success-box">
+                    <div class="order-success-badge">ЗАКАЗ ПРИНЯТ</div>
+                    <h3 class="order-success-num" id="order-success-number">PO-261009-0000</h3>
+                    <p class="order-success-desc">
+                        Конфигурация успешно зафиксирована в статусе <strong style="color:#ffffff;">ordered</strong> в базе данных SQLite. Номер заказа отправлен официальному дилеру для бронирования производственного слота.
+                    </p>
+                    <div class="order-success-actions">
+                        <button type="button" class="modal-action-btn btn-accept" id="btn-order-success-close">Завершить</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

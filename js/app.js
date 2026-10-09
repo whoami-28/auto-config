@@ -50,6 +50,9 @@ export class App {
         this.renderCurrentStep();
         this.updateHeaderAndFooterPrices();
         this.checkUrlForSharedCode();
+
+        window.addEventListener('hashchange', () => this.checkUrlForSharedCode());
+        window.addEventListener('popstate', () => this.checkUrlForSharedCode());
     }
 
     renderStepNavigation() {
@@ -852,13 +855,17 @@ export class App {
                     <p class="code-sub">Используйте этот уникальный код у официального дилера Porsche или для загрузки сборки.</p>
                 </div>
                 <div class="code-card-actions">
-                    <button class="code-btn primary" id="btn-copy-code">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        Скопировать код
+                    <button class="code-btn primary btn-order-highlight" id="btn-open-order-modal">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        Оформить заказ
                     </button>
-                    <button class="code-btn secondary" id="btn-print-build">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-                        Печать / PDF
+                    <button class="code-btn secondary" id="btn-copy-code">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        Код сборки
+                    </button>
+                    <button class="code-btn secondary" id="btn-print-brochure">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                        PDF-буклет
                     </button>
                 </div>
             </div>
@@ -951,11 +958,14 @@ export class App {
             });
         }
 
-        const printBtn = container.querySelector('#btn-print-build');
-        if (printBtn) {
-            printBtn.addEventListener('click', () => {
-                window.print();
-            });
+        const orderBtn = container.querySelector('#btn-open-order-modal');
+        if (orderBtn) {
+            orderBtn.addEventListener('click', () => this.openOrderModal());
+        }
+
+        const brochureBtn = container.querySelector('#btn-print-brochure') || container.querySelector('#btn-print-build');
+        if (brochureBtn) {
+            brochureBtn.addEventListener('click', () => this.generatePorscheBrochurePDF());
         }
     }
 
@@ -1109,6 +1119,15 @@ export class App {
 
         const model = this.engine.getCurrentModel();
         const trim = this.engine.getCurrentTrim();
+        const localCode = this.engine.generatePorscheCode();
+        const stateJson = JSON.stringify(this.engine.getState());
+        let encodedState = '';
+        try {
+            encodedState = encodeURIComponent(btoa(encodeURIComponent(stateJson)));
+        } catch(e){}
+
+        // Always cache configuration locally
+        try { localStorage.setItem(`porsche_cfg_${localCode}`, stateJson); } catch(e){}
 
         try {
             const response = await fetch('/api/configurations', {
@@ -1123,10 +1142,11 @@ export class App {
                 const data = await response.json();
                 const code = data.porscheCode || (data.data && data.data.porscheCode);
                 if (code) {
+                    try { localStorage.setItem(`porsche_cfg_${code}`, stateJson); } catch(e){}
                     return {
                         isServer: true,
                         porscheCode: code,
-                        url: `${window.location.origin}${window.location.pathname}#code=${code}`
+                        url: `${window.location.origin}${window.location.pathname}?code=${encodeURIComponent(code)}&c=${encodedState}`
                     };
                 }
             }
@@ -1134,11 +1154,10 @@ export class App {
             // Server offline or static hosting
         }
 
-        const localCode = this.engine.generatePorscheCode();
         return {
             isServer: false,
             porscheCode: localCode,
-            url: `${window.location.origin}${window.location.pathname}#code=${localCode}`
+            url: `${window.location.origin}${window.location.pathname}?code=${encodeURIComponent(localCode)}&c=${encodedState}`
         };
     }
 
@@ -1179,32 +1198,83 @@ export class App {
     }
 
     async checkUrlForSharedCode() {
-        const hash = window.location.hash;
-        const search = window.location.search;
+        const hash = window.location.hash || '';
+        const search = window.location.search || '';
         let code = null;
+        let encodedCfg = null;
 
-        if (hash && hash.includes('code=')) {
-            const match = hash.match(/code=([^&]+)/);
-            if (match) code = decodeURIComponent(match[1]);
-        } else if (search && search.includes('code=')) {
+        if (search) {
             const urlParams = new URLSearchParams(search);
             code = urlParams.get('code');
+            encodedCfg = urlParams.get('c') || urlParams.get('cfg') || urlParams.get('state');
         }
 
-        if (!code) return;
+        if (!code && hash) {
+            const hashClean = hash.replace(/^#/, '');
+            const urlParams = new URLSearchParams(hashClean);
+            code = urlParams.get('code');
+            encodedCfg = urlParams.get('c') || urlParams.get('cfg') || urlParams.get('state');
 
-        try {
-            const response = await fetch(`/api/configurations/${encodeURIComponent(code)}`);
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success && data.data && data.data.config) {
-                    this.engine.importState(data.data.config);
-                    this.showToast(`Конфигурация ${code} загружена с сервера`);
+            if (!code && hash.includes('code=')) {
+                const match = hash.match(/code=([^&]+)/);
+                if (match) code = decodeURIComponent(match[1]);
+            }
+        }
+
+        if (!code && !encodedCfg) return;
+
+        // 1. Try server fetch if code exists
+        if (code) {
+            try {
+                const response = await fetch(`/api/configurations/${encodeURIComponent(code)}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.data && data.data.config) {
+                        this.engine.importState(data.data.config);
+                        this.showToast(`Конфигурация ${code} загружена с сервера`);
+                        this.updateHeaderAndFooterPrices();
+                        return;
+                    }
+                }
+            } catch (err) {
+                // Server offline or static hosting
+            }
+
+            // 2. Try localStorage cache
+            const cached = localStorage.getItem(`porsche_cfg_${code}`);
+            if (cached) {
+                try {
+                    const parsed = JSON.parse(cached);
+                    if (this.engine.importState(parsed)) {
+                        this.showToast(`Конфигурация ${code} загружена из локальной памяти`);
+                        this.updateHeaderAndFooterPrices();
+                        return;
+                    }
+                } catch(e){}
+            }
+        }
+
+        // 3. Fallback: decode URL payload
+        if (encodedCfg) {
+            try {
+                const rawJson = decodeURIComponent(atob(decodeURIComponent(encodedCfg)));
+                const parsed = JSON.parse(rawJson);
+                if (this.engine.importState(parsed)) {
+                    this.showToast(`Конфигурация ${code || 'Porsche'} восстановлена по ссылке`);
+                    this.updateHeaderAndFooterPrices();
                     return;
                 }
+            } catch(e) {
+                try {
+                    const rawJson = atob(encodedCfg);
+                    const parsed = JSON.parse(rawJson);
+                    if (this.engine.importState(parsed)) {
+                        this.showToast(`Конфигурация ${code || 'Porsche'} восстановлена`);
+                        this.updateHeaderAndFooterPrices();
+                        return;
+                    }
+                } catch(e2){}
             }
-        } catch (err) {
-            // Server offline
         }
     }
 
@@ -1371,6 +1441,113 @@ export class App {
                 this.showToast('Вы вышли из учетной записи');
             };
         }
+
+        // Account modal tabs: Configurations vs Orders
+        const tabUserConfigsBtn = document.getElementById('tab-user-configs-btn');
+        const tabUserOrdersBtn = document.getElementById('tab-user-orders-btn');
+        const userConfigsList = document.getElementById('user-configs-list');
+        const userOrdersList = document.getElementById('user-orders-list');
+
+        if (tabUserConfigsBtn && tabUserOrdersBtn) {
+            tabUserConfigsBtn.onclick = () => {
+                tabUserConfigsBtn.classList.add('active');
+                tabUserOrdersBtn.classList.remove('active');
+                userConfigsList?.classList.remove('hidden');
+                userOrdersList?.classList.add('hidden');
+                this.loadUserConfigsList();
+            };
+            tabUserOrdersBtn.onclick = () => {
+                tabUserOrdersBtn.classList.add('active');
+                tabUserConfigsBtn.classList.remove('active');
+                userOrdersList?.classList.remove('hidden');
+                userConfigsList?.classList.add('hidden');
+                this.loadUserOrdersList();
+            };
+        }
+
+        // Official Order placement modal
+        const orderModal = document.getElementById('order-modal');
+        const orderModalClose = document.getElementById('order-modal-close');
+        const orderSuccessClose = document.getElementById('btn-order-success-close');
+        const orderForm = document.getElementById('order-placement-form');
+
+        if (orderModalClose) {
+            orderModalClose.onclick = () => orderModal?.classList.remove('visible');
+        }
+        if (orderSuccessClose) {
+            orderSuccessClose.onclick = () => orderModal?.classList.remove('visible');
+        }
+
+        if (orderForm) {
+            orderForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const dealerCenter = document.getElementById('order-dealer-center')?.value;
+                const customerName = document.getElementById('order-customer-name')?.value.trim();
+                const customerPhone = document.getElementById('order-customer-phone')?.value.trim();
+                const deliveryOption = document.getElementById('order-delivery-option')?.value;
+                const errEl = document.getElementById('order-error-msg');
+                const submitBtn = document.getElementById('btn-submit-order');
+
+                if (errEl) errEl.classList.remove('visible');
+
+                if (!this.authToken) {
+                    this.showToast('Для оформления официального заказа необходимо войти');
+                    this.openAuthModal('login');
+                    return;
+                }
+
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Резервирование слота...';
+                }
+
+                try {
+                    // Ensure configuration is saved on server first
+                    await this.saveConfigurationToServer(true);
+                    const porscheCode = this.engine.generatePorscheCode();
+
+                    const res = await fetch('/api/orders', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.authToken}`
+                        },
+                        body: JSON.stringify({
+                            porscheCode: porscheCode,
+                            dealerCenter: dealerCenter,
+                            customerName: customerName,
+                            customerPhone: customerPhone,
+                            deliveryOption: deliveryOption
+                        })
+                    });
+
+                    const data = await res.json();
+                    if (res.ok && data.success) {
+                        const orderNumEl = document.getElementById('order-success-number');
+                        if (orderNumEl) orderNumEl.textContent = data.data.order_number;
+
+                        document.getElementById('order-form-container')?.classList.add('hidden');
+                        document.getElementById('order-success-box')?.classList.remove('hidden');
+                        this.showToast(`Заказ ${data.data.order_number} успешно принят!`);
+                    } else {
+                        if (errEl) {
+                            errEl.textContent = (data.error && data.error.message) || data.error || 'Ошибка при создании заказа';
+                            errEl.classList.add('visible');
+                        }
+                    }
+                } catch (err) {
+                    if (errEl) {
+                        errEl.textContent = 'Сервер недоступен для оформления заказа';
+                        errEl.classList.add('visible');
+                    }
+                } finally {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Подтвердить и направить заказ';
+                    }
+                }
+            });
+        }
     }
 
     setAuth(token, user) {
@@ -1421,11 +1598,60 @@ export class App {
         modal.classList.add('visible');
     }
 
+    openOrderModal() {
+        const modal = document.getElementById('order-modal');
+        if (!modal) return;
+
+        if (!this.currentUser) {
+            this.showToast('Пожалуйста, войдите в аккаунт для оформления заказа');
+            this.openAuthModal('login');
+            return;
+        }
+
+        const model = this.engine.getCurrentModel();
+        const trim = this.engine.getCurrentTrim();
+        const prices = this.engine.calculatePrice();
+        const porscheCode = this.engine.generatePorscheCode();
+
+        const carNameEl = document.getElementById('order-modal-car-name');
+        const codeEl = document.getElementById('order-modal-code');
+        const priceEl = document.getElementById('order-modal-price');
+        const nameInput = document.getElementById('order-customer-name');
+        const errEl = document.getElementById('order-error-msg');
+
+        if (carNameEl) carNameEl.textContent = `${model.name} ${trim.name}`;
+        if (codeEl) codeEl.textContent = porscheCode;
+        if (priceEl) priceEl.textContent = prices.totalPriceFormatted;
+        if (nameInput && !nameInput.value && this.currentUser.username) {
+            nameInput.value = this.currentUser.username;
+        }
+        if (errEl) errEl.classList.remove('visible');
+
+        document.getElementById('order-form-container')?.classList.remove('hidden');
+        document.getElementById('order-success-box')?.classList.add('hidden');
+
+        modal.classList.add('visible');
+    }
+
     async openUserConfigsModal() {
         const modal = document.getElementById('user-configs-modal');
         if (!modal) return;
         modal.classList.add('visible');
 
+        const tabUserConfigsBtn = document.getElementById('tab-user-configs-btn');
+        const tabUserOrdersBtn = document.getElementById('tab-user-orders-btn');
+        const userConfigsList = document.getElementById('user-configs-list');
+        const userOrdersList = document.getElementById('user-orders-list');
+
+        tabUserConfigsBtn?.classList.add('active');
+        tabUserOrdersBtn?.classList.remove('active');
+        userConfigsList?.classList.remove('hidden');
+        userOrdersList?.classList.add('hidden');
+
+        await this.loadUserConfigsList();
+    }
+
+    async loadUserConfigsList() {
         const statusEl = document.getElementById('user-configs-status');
         const listEl = document.getElementById('user-configs-list');
         if (listEl) listEl.innerHTML = '';
@@ -1469,7 +1695,7 @@ export class App {
                             btn.onclick = async (e) => {
                                 const code = e.currentTarget.dataset.code;
                                 await this.loadConfigByCode(code);
-                                modal.classList.remove('visible');
+                                document.getElementById('user-configs-modal')?.classList.remove('visible');
                             };
                         });
 
@@ -1478,7 +1704,7 @@ export class App {
                                 const code = e.currentTarget.dataset.code;
                                 if (confirm(`Удалить конфигурацию ${code}?`)) {
                                     await this.deleteConfigByCode(code);
-                                    this.openUserConfigsModal();
+                                    this.loadUserConfigsList();
                                 }
                             };
                         });
@@ -1490,6 +1716,454 @@ export class App {
         } catch (err) {
             if (statusEl) statusEl.textContent = 'Ошибка загрузки сохраненных конфигураций.';
         }
+    }
+
+    async loadUserOrdersList() {
+        const listEl = document.getElementById('user-orders-list');
+        const statusEl = document.getElementById('user-configs-status');
+        if (!listEl) return;
+        listEl.innerHTML = '';
+        if (statusEl) {
+            statusEl.textContent = 'Загрузка истории ваших заказов...';
+            statusEl.style.display = 'block';
+        }
+
+        try {
+            const res = await fetch('/api/orders', {
+                headers: { 'Authorization': `Bearer ${this.authToken}` }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+                    if (statusEl) statusEl.style.display = 'none';
+                    const statusLabels = {
+                        pending: 'В обработке',
+                        confirmed: 'Подтвержден дилером',
+                        in_production: 'В производстве (Цуффенхаузен)',
+                        completed: 'Готов к выдаче',
+                        cancelled: 'Отменен'
+                    };
+
+                    listEl.innerHTML = data.data.map(order => {
+                        const dateStr = order.created_at ? new Date(order.created_at).toLocaleDateString('ru-RU') : '';
+                        const statusText = statusLabels[order.status] || order.status;
+                        const priceFormatted = new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }).format(order.total_price || 0);
+
+                        return `
+                            <div class="user-order-card">
+                                <div class="uoc-header">
+                                    <span class="uoc-number">${order.order_number}</span>
+                                    <span class="uoc-status uoc-status-${order.status}">${statusText}</span>
+                                </div>
+                                <div class="uoc-details">
+                                    <div class="uoc-vehicle">${order.vehicle_title || 'Porsche'}</div>
+                                    <div class="uoc-dealer">${order.dealer_city || 'Официальный дилерский центр'}</div>
+                                    <div class="uoc-meta-row">
+                                        <span class="uoc-code">Код сборки: <strong>${order.porsche_code}</strong></span>
+                                        <span class="uoc-date">${dateStr}</span>
+                                    </div>
+                                    <div class="uoc-price">${priceFormatted}</div>
+                                </div>
+                                <div class="uoc-actions">
+                                    <button class="ucc-btn ucc-btn-load" data-code="${order.porsche_code}">Загрузить сборку</button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                    listEl.querySelectorAll('.ucc-btn-load').forEach(btn => {
+                        btn.onclick = async (e) => {
+                            const code = e.currentTarget.dataset.code;
+                            await this.loadConfigByCode(code);
+                            document.getElementById('user-configs-modal')?.classList.remove('visible');
+                        };
+                    });
+                    return;
+                }
+            }
+            if (statusEl) statusEl.textContent = 'У вас пока нет оформленных заказов.';
+        } catch (err) {
+            if (statusEl) statusEl.textContent = 'Ошибка загрузки истории заказов.';
+        }
+    }
+
+    generatePorscheBrochurePDF() {
+        const state = this.engine.getState();
+        const model = this.engine.getCurrentModel();
+        const trim = this.engine.getCurrentTrim();
+        const color = this.engine.getCurrentColor();
+        const wheel = this.engine.getCurrentWheel();
+        const wheelFinish = this.engine.getCurrentWheelFinish();
+        const caliper = this.engine.getCurrentCaliper();
+        const interior = this.engine.getCurrentInterior();
+        const seat = this.engine.getCurrentSeat();
+        const prices = this.engine.calculatePrice();
+        const porscheCode = this.engine.generatePorscheCode();
+        const heroImg = this.visualizer ? this.visualizer.resolveCurrentImage(state, model, color) : 'assets/images/porsche_front_red.jpg';
+
+        const printWin = window.open('', '_blank');
+        if (!printWin) {
+            this.showToast('Разрешите всплывающие окна для печати PDF-буклета');
+            return;
+        }
+
+        const dateStr = new Date().toLocaleDateString('ru-RU', { day: '2-digit', month: 'long', year: 'numeric' });
+
+        const html = `<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Porsche Specification - ${porscheCode}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 15mm 15mm 15mm 15mm;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #111;
+        }
+        body {
+            background: #fff;
+            padding: 20px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 2px solid #000;
+            padding-bottom: 14px;
+            margin-bottom: 20px;
+        }
+        .brand-title {
+            font-size: 26px;
+            font-weight: 900;
+            letter-spacing: 7px;
+            text-transform: uppercase;
+        }
+        .brand-sub {
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #555;
+            margin-top: 4px;
+        }
+        .doc-meta {
+            text-align: right;
+            font-size: 11px;
+            color: #444;
+        }
+        .code-highlight {
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #000;
+        }
+        .hero-section {
+            margin-bottom: 24px;
+            text-align: center;
+            background: #f7f7f8;
+            border-radius: 4px;
+            padding: 16px;
+            border: 1px solid #e5e5e5;
+        }
+        .hero-img {
+            max-width: 100%;
+            height: auto;
+            max-height: 320px;
+            object-fit: contain;
+            border-radius: 2px;
+        }
+        .vehicle-title-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+        }
+        .vehicle-name {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .vehicle-series {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+        }
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+            background: #fafafa;
+            border: 1px solid #eaeaea;
+            padding: 14px;
+            border-radius: 4px;
+        }
+        .spec-item {
+            border-left: 2px solid #000;
+            padding-left: 10px;
+        }
+        .spec-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: #777;
+            letter-spacing: 0.5px;
+        }
+        .spec-val {
+            font-size: 15px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 6px;
+            margin: 20px 0 10px 0;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .items-table th {
+            text-align: left;
+            font-size: 10px;
+            text-transform: uppercase;
+            color: #666;
+            letter-spacing: 0.8px;
+            padding: 6px 8px;
+            border-bottom: 1px solid #bbb;
+        }
+        .items-table td {
+            padding: 7px 8px;
+            border-bottom: 1px solid #eee;
+            font-size: 12px;
+        }
+        .td-price {
+            text-align: right;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .td-code {
+            font-family: monospace;
+            font-size: 11px;
+            color: #666;
+        }
+        .financial-summary {
+            margin-top: 20px;
+            width: 50%;
+            margin-left: auto;
+            border-top: 1px solid #000;
+            padding-top: 10px;
+        }
+        .fin-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            font-size: 12px;
+        }
+        .fin-row.total {
+            font-size: 16px;
+            font-weight: 800;
+            border-top: 1px solid #000;
+            padding-top: 8px;
+            margin-top: 6px;
+        }
+        .footer-note {
+            margin-top: 30px;
+            padding-top: 14px;
+            border-top: 1px solid #eee;
+            font-size: 10px;
+            color: #888;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .barcode-box {
+            letter-spacing: 4px;
+            font-family: monospace;
+            font-size: 11px;
+            font-weight: 700;
+            background: #f0f0f0;
+            padding: 4px 10px;
+            border-radius: 2px;
+        }
+        .no-print-bar {
+            background: #111;
+            color: #fff;
+            padding: 12px 20px;
+            margin: -20px -20px 20px -20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .btn-print {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 8px 18px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 2px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        @media print {
+            .no-print-bar { display: none !important; }
+            body { padding: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print-bar">
+        <span>Официальная спецификация Porsche • Нажмите «Печать» для сохранения в PDF</span>
+        <button class="btn-print" onclick="window.print()">Сохранить в PDF / Печать</button>
+    </div>
+
+    <div class="header">
+        <div>
+            <div class="brand-title">P O R S C H E</div>
+            <div class="brand-sub">Exclusive Manufaktur • Individual Specification</div>
+        </div>
+        <div class="doc-meta">
+            <div>Porsche Code: <span class="code-highlight">${porscheCode}</span></div>
+            <div>Дата формирования: ${dateStr}</div>
+        </div>
+    </div>
+
+    <div class="hero-section">
+        <img src="${heroImg}" alt="${model.name} ${trim.name}" class="hero-img">
+        <div class="vehicle-title-bar">
+            <div>
+                <div class="vehicle-series">${model.series}</div>
+                <div class="vehicle-name">${model.name} ${trim.name}</div>
+            </div>
+            <div class="code-highlight">${prices.totalPriceFormatted}</div>
+        </div>
+    </div>
+
+    <div class="specs-grid">
+        <div class="spec-item">
+            <div class="spec-label">Мощность</div>
+            <div class="spec-val">${trim.power}</div>
+        </div>
+        <div class="spec-item">
+            <div class="spec-label">Разгон 0–100 км/ч</div>
+            <div class="spec-val">${trim.acceleration}</div>
+        </div>
+        <div class="spec-item">
+            <div class="spec-label">Макс. скорость</div>
+            <div class="spec-val">${trim.topSpeed}</div>
+        </div>
+        <div class="spec-item">
+            <div class="spec-label">Трансмиссия</div>
+            <div class="spec-val">${trim.transmission}</div>
+        </div>
+    </div>
+
+    <div class="section-title">Индивидуальная спецификация и выбранное оборудование</div>
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th style="width: 25%;">Категория</th>
+                <th style="width: 50%;">Наименование</th>
+                <th style="width: 10%;">Код</th>
+                <th style="width: 15%; text-align: right;">Стоимость</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Базовая модификация</td>
+                <td><strong>${model.name} ${trim.name}</strong> (${trim.engine})</td>
+                <td class="td-code">${trim.id}</td>
+                <td class="td-price">${prices.basePriceFormatted}</td>
+            </tr>
+            <tr>
+                <td>Цвет кузова</td>
+                <td>${color.nameRu} (${color.category === 'pts' ? 'Paint to Sample' : color.category.toUpperCase()})</td>
+                <td class="td-code">${color.code || color.id}</td>
+                <td class="td-price">${color.price === 0 ? 'Включено' : prices.format(color.price)}</td>
+            </tr>
+            <tr>
+                <td>Колесные диски</td>
+                <td>${wheel.nameRu} (${wheel.size}) — ${wheelFinish.name}</td>
+                <td class="td-code">${wheel.code || wheel.id}</td>
+                <td class="td-price">${wheel.price + wheelFinish.price === 0 ? 'Включено' : prices.format(wheel.price + wheelFinish.price)}</td>
+            </tr>
+            <tr>
+                <td>Тормозные суппорты</td>
+                <td>Суппорты: ${caliper.name}</td>
+                <td class="td-code">${caliper.id}</td>
+                <td class="td-price">${caliper.price === 0 ? 'Включено' : prices.format(caliper.price)}</td>
+            </tr>
+            <tr>
+                <td>Отделка салона</td>
+                <td>${interior.nameRu}</td>
+                <td class="td-code">${interior.code || interior.id}</td>
+                <td class="td-price">${interior.price === 0 ? 'Включено' : prices.format(interior.price)}</td>
+            </tr>
+            <tr>
+                <td>Сиденья</td>
+                <td>${seat.nameRu} (${seat.adjustments})</td>
+                <td class="td-code">${seat.id}</td>
+                <td class="td-price">${seat.price === 0 ? 'Включено' : prices.format(seat.price)}</td>
+            </tr>
+            ${prices.breakdown.filter(i => i.removable).map(i => `
+                <tr>
+                    <td>${i.category}</td>
+                    <td>${i.name}</td>
+                    <td class="td-code">${i.code || '-'}</td>
+                    <td class="td-price">${i.formatted}</td>
+                </tr>
+            `).join('')}
+        </tbody>
+    </table>
+
+    <div class="financial-summary">
+        <div class="fin-row">
+            <span>Базовая цена:</span>
+            <span>${prices.basePriceFormatted}</span>
+        </div>
+        <div class="fin-row">
+            <span>Дополнительное оборудование:</span>
+            <span>${prices.equipmentPriceFormatted}</span>
+        </div>
+        <div class="fin-row">
+            <span>Сбор за транспортировку и подготовку:</span>
+            <span>${prices.deliveryFeeFormatted}</span>
+        </div>
+        <div class="fin-row total">
+            <span>ИТОГО (Total MSRP):</span>
+            <span>${prices.totalPriceFormatted}</span>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        <div>
+            <div>Официальный конфигуратор Dr. Ing. h.c. F. Porsche AG.</div>
+            <div>Для заказа передайте Porsche Code официальному дилеру Porsche.</div>
+        </div>
+        <div class="barcode-box">||| | ||||| | || | ||| ${porscheCode}</div>
+    </div>
+</body>
+</html>`;
+
+        printWin.document.open();
+        printWin.document.write(html);
+        printWin.document.close();
     }
 
     async loadConfigByCode(code) {

@@ -24,14 +24,15 @@ const ALLOWED_TRANSITIONS = {
  * Places an order for a saved configuration
  */
 router.post('/', authMiddleware, (req, res) => {
-    const { porscheCode, dealerCity } = req.body;
+    const { porscheCode, dealerCity, dealerCenter } = req.body;
+    const city = dealerCity || dealerCenter;
 
-    if (!porscheCode || !dealerCity) {
+    if (!porscheCode || !city) {
         return res.status(400).json({
             success: false,
             error: {
                 code: 'VALIDATION_ERROR',
-                message: 'Необходимо указать porscheCode и dealerCity (город дилерского центра)'
+                message: 'Необходимо указать porscheCode и дилерский центр (dealerCity или dealerCenter)'
             }
         });
     }
@@ -56,7 +57,7 @@ router.post('/', authMiddleware, (req, res) => {
             VALUES (?, ?, ?, ?, 'pending', ?)
         `);
 
-        orderStmt.run(orderNumber, config.id, req.user.id, dealerCity, config.total_price);
+        orderStmt.run(orderNumber, config.id, req.user.id, city, config.total_price);
 
         // Update configuration status to 'ordered'
         db.prepare(`UPDATE configurations SET status = 'ordered', updated_at = CURRENT_TIMESTAMP WHERE id = ?`).run(config.id);
