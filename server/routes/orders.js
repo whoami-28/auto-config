@@ -6,7 +6,8 @@
 import express from 'express';
 import db from '../db.js';
 import { authMiddleware } from '../middleware/auth.js';
-import { generateOrderNumber } from '../services/logicService.js';
+import { generateOrderNumber, calculateServerPrice } from '../services/logicService.js';
+import { CONFIG_DATA } from '../../js/data.js';
 
 const router = express.Router();
 
@@ -37,7 +38,65 @@ router.post('/', authMiddleware, (req, res) => {
         });
     }
 
-    const config = db.prepare('SELECT * FROM configurations WHERE porsche_code = ?').get(porscheCode.trim().toUpperCase());
+    const cleanCode = porscheCode.trim().toUpperCase();
+    let config = db.prepare('SELECT * FROM configurations WHERE porsche_code = ?').get(cleanCode);
+
+    // Auto-create configuration if not yet in SQLite but state is provided
+    if (!config && req.body.config) {
+        const clientCfg = req.body.config;
+        const model = CONFIG_DATA.models.find(m => m.id === clientCfg.modelId);
+        const trim = model ? model.trims.find(t => t.id === clientCfg.trimId) : null;
+        if (model && trim) {
+            const pricing = calculateServerPrice(clientCfg);
+            const title = req.body.title || `${model.name} ${trim.name}`;
+
+            const insertTx = db.transaction(() => {
+                const stmt = db.prepare(`
+                    INSERT INTO configurations (
+                        porsche_code, user_id, title, model_id, trim_id, color_id,
+                        wheel_id, wheel_finish_id, caliper_id, interior_id, seat_id,
+                        currency, status, base_price, equipment_price, delivery_fee, total_price
+                    ) VALUES (
+                        ?, ?, ?, ?, ?, ?,
+                        ?, ?, ?, ?, ?,
+                        ?, 'saved', ?, ?, ?, ?
+                    )
+                `);
+
+                const result = stmt.run(
+                    cleanCode,
+                    req.user.id,
+                    title,
+                    clientCfg.modelId,
+                    clientCfg.trimId,
+                    clientCfg.colorId || 'paint_guards_red',
+                    clientCfg.wheelId || 'wheel_20_21_carrera_s',
+                    clientCfg.wheelFinishId || 'wf_brilliant_silver',
+                    clientCfg.caliperId || 'caliper_black',
+                    clientCfg.interiorId || 'int_standard_black',
+                    clientCfg.seatId || 'seat_sport_4way',
+                    clientCfg.currency || 'USD',
+                    pricing.basePriceUSD,
+                    pricing.totalEquipmentPriceUSD,
+                    pricing.deliveryFeeUSD,
+                    pricing.totalPriceUSD
+                );
+
+                if (Array.isArray(clientCfg.options) && clientCfg.options.length > 0) {
+                    const insertOpt = db.prepare('INSERT OR IGNORE INTO configuration_options (configuration_id, option_id) VALUES (?, ?)');
+                    for (const optId of clientCfg.options) {
+                        insertOpt.run(result.lastInsertRowid, optId);
+                    }
+                }
+
+                return result.lastInsertRowid;
+            });
+
+            const insertedId = insertTx();
+            config = db.prepare('SELECT * FROM configurations WHERE id = ?').get(insertedId);
+        }
+    }
+
     if (!config) {
         return res.status(404).json({
             success: false,

@@ -142,44 +142,76 @@ router.post('/', optionalAuthMiddleware, (req, res) => {
     }
 
     const pricing = calculateServerPrice(config);
-    const porscheCode = generatePorscheCode(config);
+    const porscheCode = (body.porscheCode || config.porscheCode || generatePorscheCode(config)).trim().toUpperCase();
     const userId = req.user ? req.user.id : null;
     const title = body.title || `${model.name} ${trim.name}`;
 
-    // Transactional database insert
-    const insertConfig = db.transaction(() => {
-        const stmt = db.prepare(`
-            INSERT INTO configurations (
-                porsche_code, user_id, title, model_id, trim_id, color_id,
-                wheel_id, wheel_finish_id, caliper_id, interior_id, seat_id,
-                currency, status, base_price, equipment_price, delivery_fee, total_price
-            ) VALUES (
-                ?, ?, ?, ?, ?, ?,
-                ?, ?, ?, ?, ?,
-                ?, 'saved', ?, ?, ?, ?
-            )
-        `);
+    // Transactional database insert or update if already exists
+    const saveConfigTx = db.transaction(() => {
+        const existing = db.prepare('SELECT id FROM configurations WHERE porsche_code = ?').get(porscheCode);
+        let configId;
 
-        const result = stmt.run(
-            porscheCode,
-            userId,
-            title,
-            config.modelId,
-            config.trimId,
-            config.colorId || 'paint_guards_red',
-            config.wheelId || 'wheel_20_21_carrera_s',
-            config.wheelFinishId || 'wf_brilliant_silver',
-            config.caliperId || 'caliper_black',
-            config.interiorId || 'int_standard_black',
-            config.seatId || 'seat_sport_4way',
-            config.currency || 'USD',
-            pricing.basePriceUSD,
-            pricing.totalEquipmentPriceUSD,
-            pricing.deliveryFeeUSD,
-            pricing.totalPriceUSD
-        );
+        if (existing) {
+            configId = existing.id;
+            db.prepare(`
+                UPDATE configurations SET
+                    title = ?, model_id = ?, trim_id = ?, color_id = ?,
+                    wheel_id = ?, wheel_finish_id = ?, caliper_id = ?, interior_id = ?, seat_id = ?,
+                    currency = ?, base_price = ?, equipment_price = ?, delivery_fee = ?, total_price = ?,
+                    user_id = COALESCE(?, user_id), updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+            `).run(
+                title,
+                config.modelId,
+                config.trimId,
+                config.colorId || 'paint_guards_red',
+                config.wheelId || 'wheel_20_21_carrera_s',
+                config.wheelFinishId || 'wf_brilliant_silver',
+                config.caliperId || 'caliper_black',
+                config.interiorId || 'int_standard_black',
+                config.seatId || 'seat_sport_4way',
+                config.currency || 'USD',
+                pricing.basePriceUSD,
+                pricing.totalEquipmentPriceUSD,
+                pricing.deliveryFeeUSD,
+                pricing.totalPriceUSD,
+                userId,
+                configId
+            );
+            db.prepare('DELETE FROM configuration_options WHERE configuration_id = ?').run(configId);
+        } else {
+            const stmt = db.prepare(`
+                INSERT INTO configurations (
+                    porsche_code, user_id, title, model_id, trim_id, color_id,
+                    wheel_id, wheel_finish_id, caliper_id, interior_id, seat_id,
+                    currency, status, base_price, equipment_price, delivery_fee, total_price
+                ) VALUES (
+                    ?, ?, ?, ?, ?, ?,
+                    ?, ?, ?, ?, ?,
+                    ?, 'saved', ?, ?, ?, ?
+                )
+            `);
 
-        const configId = result.lastInsertRowid;
+            const result = stmt.run(
+                porscheCode,
+                userId,
+                title,
+                config.modelId,
+                config.trimId,
+                config.colorId || 'paint_guards_red',
+                config.wheelId || 'wheel_20_21_carrera_s',
+                config.wheelFinishId || 'wf_brilliant_silver',
+                config.caliperId || 'caliper_black',
+                config.interiorId || 'int_standard_black',
+                config.seatId || 'seat_sport_4way',
+                config.currency || 'USD',
+                pricing.basePriceUSD,
+                pricing.totalEquipmentPriceUSD,
+                pricing.deliveryFeeUSD,
+                pricing.totalPriceUSD
+            );
+            configId = result.lastInsertRowid;
+        }
 
         // Insert options
         if (Array.isArray(config.options) && config.options.length > 0) {
@@ -192,7 +224,7 @@ router.post('/', optionalAuthMiddleware, (req, res) => {
         return configId;
     });
 
-    const configId = insertConfig();
+    const configId = saveConfigTx();
     const savedRecord = getFullConfigByCode(porscheCode);
 
     res.status(201).json({

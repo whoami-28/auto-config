@@ -1134,13 +1134,14 @@ export class App {
                 method: 'POST',
                 headers,
                 body: JSON.stringify({
+                    porscheCode: localCode,
                     title: `${model.name} ${trim.name}`,
                     config: this.engine.getState()
                 })
             });
             if (response.ok) {
                 const data = await response.json();
-                const code = data.porscheCode || (data.data && data.data.porscheCode);
+                const code = data.porscheCode || (data.data && data.data.porscheCode) || localCode;
                 if (code) {
                     try { localStorage.setItem(`porsche_cfg_${code}`, stateJson); } catch(e){}
                     return {
@@ -1503,8 +1504,10 @@ export class App {
 
                 try {
                     // Ensure configuration is saved on server first
-                    await this.saveConfigurationToServer(true);
-                    const porscheCode = this.engine.generatePorscheCode();
+                    const saveRes = await this.saveConfigurationToServer(true);
+                    const porscheCode = (saveRes && saveRes.porscheCode) || this.engine.generatePorscheCode();
+                    const model = this.engine.getCurrentModel();
+                    const trim = this.engine.getCurrentTrim();
 
                     const res = await fetch('/api/orders', {
                         method: 'POST',
@@ -1514,6 +1517,8 @@ export class App {
                         },
                         body: JSON.stringify({
                             porscheCode: porscheCode,
+                            config: this.engine.getState(),
+                            title: `${model.name} ${trim.name}`,
                             dealerCenter: dealerCenter,
                             customerName: customerName,
                             customerPhone: customerPhone,
